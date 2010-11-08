@@ -4,27 +4,22 @@ OOCms Quick Guide
 
 GENERAL
 -------
-OOCms is a CMS(Content Management System) wich can run as a CGI application(thanks to OOCgi) on any server 
-that supports parsed header output. It is completely customizable, thanks to a "templat" system described below. 
-When you load the CGI page with your browser, OOCms parses the query string that you pass in the address bar. 
-It looks for a "page" argument, wich passes the name of the template to open and a "subpage" argument wich 
-passes the name of the thtml and db file to parse. For example, oocms.cgi?page=news&subpage=allNews would make  
-oocms look for a template named "news" and open the allNews.thtml and allNews.db file located in the templates/news/ 
-If no subpage argument is passed, index is guessed. Similarly, if no page argument is passed, IndexTemplate is guessed.
+OOCms is a CMS(Content Management System) wich can run as a CGI application(thanks to OOCgi) on any server that supports parsed header output. It is completely customizable, 
+thanks to a "template" system described below. When you load the CGI page with your browser, OOCms parses the query string that you pass in the address bar. It looks for a "page" 
+argument, wich passes the name of the template to open and a "subpage" argument wich passes the name of the thtml and db file to parse. For example, oocms.cgi?page=news&subpage=allNews 
+would make oocms look for a template named "news" and open the allNews.thtml and allNews.db file located in the templates/news/. If no subpage argument is passed, index is guessed. 
+Similarly, if no page argument is passed, IndexTemplate is guessed.
 
 DB FILES
 --------
-DB files are the files wich "link" the database files to the thtml file. Using them, you can specify variables of two types
-that will later be used in the thtml files. There MUST be a db file for each thtml file, even if it is empty. There are 
-currently three commands that you can use in a db file. To use a command, you just have to write [CommandName]: [Arg1],[Arg2],...
-in your db file. Commands are executed in the order they are written. The first command is the Database command. Its first
-parameter is the name of the database to open, without the .csv extention. There is a second, optional argument. The second
-argument can either be DESCORDER[columnName] or ASCORDER[columnName]. On the first case, the database is ordered in a descending
-order based on the column named `columnName`. On the other case, the exact same happens but with ascending order. The second
-command is Column. It takes two arguments and is in fact a variable declaration. What the command does is that it sets a variable
-of type `Array`. Its first argument is the name of the variable to set. The second one is the name of the column in the currently opened
-database. Finally, there is the Count command. Like the Column command, it is a variable declaration, only this time of type `Int`. 
-It takes one parameter, the name of the variable to set and initializes it with the number of lines of the currently opened database.
+DB files are the files wich "link" the database files to the thtml file. Using them, you can specify variables of two types that will later be used in the thtml files. There MUST be a db 
+file for each thtml file, even if it is empty. There are currently three commands that you can use in a db file. To use a command, you just have to write [CommandName]: [Arg1],[Arg2],...
+in your db file. Commands are executed in the order they are written. The first command is the Database command. Its first parameter is the name of the database to open, without the .csv extention. 
+There is a second, optional argument. The second argument can either be DESCORDER[columnName] or ASCORDER[columnName]. On the first case, the database is ordered in a descending order based on the column 
+named `columnName`. On the other case, the exact same happens but with ascending order. The second command is Column. It takes two arguments and is in fact a variable declaration. What the 
+command does is that it sets a variable of type `Array`. Its first argument is the name of the variable to set. The second one is the name of the column in the currently opened database. 
+Finally, there is the Count command. Like the Column command, it is a variable declaration, only this time of type `Int`. It takes one parameter, the name of the variable to set and initializes 
+it with the number of lines of the currently opened database.
 
 NOTE 1: You SHOULD(untested, but code is structured that way) be able to open more than one databases in a single db file and thus could 
 do something like:
