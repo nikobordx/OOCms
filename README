@@ -4,12 +4,12 @@ OOCms Quick Guide
 
 GENERAL
 -------
-OOCms is a CMS(Content Management System) wich can run as a CGI application(thanks to OOCgi) on any server
-that supports parsed header output. It is completely customizable, thanks to a "templat" system described below.
-When you load the CGI page with your browser, OOCms parses the query string that you pass in the address bar.
-It looks for a "page" argument, wich passes the name of the template to open and a "subpage" argument wich
-passes the name of the thtml and db file to parse. For example, oocms.cgi?page=news&subpage=allNews would make 
-oocms look for a template named "news" and open the allNews.thtml and allNews.db file located in the templates/news/
+OOCms is a CMS(Content Management System) wich can run as a CGI application(thanks to OOCgi) on any server 
+that supports parsed header output. It is completely customizable, thanks to a "templat" system described below. 
+When you load the CGI page with your browser, OOCms parses the query string that you pass in the address bar. 
+It looks for a "page" argument, wich passes the name of the template to open and a "subpage" argument wich 
+passes the name of the thtml and db file to parse. For example, oocms.cgi?page=news&subpage=allNews would make  
+oocms look for a template named "news" and open the allNews.thtml and allNews.db file located in the templates/news/ 
 If no subpage argument is passed, index is guessed. Similarly, if no page argument is passed, IndexTemplate is guessed.
 
 DB FILES
