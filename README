@@ -21,8 +21,7 @@ command does is that it sets a variable of type `Array`. Its first argument is t
 Finally, there is the Count command. Like the Column command, it is a variable declaration, only this time of type `Int`. It takes one parameter, the name of the variable to set and initializes 
 it with the number of lines of the currently opened database.
 
-NOTE 1: You SHOULD(untested, but code is structured that way) be able to open more than one databases in a single db file and thus could 
-do something like:
+NOTE 1: You SHOULD(untested, but code is structured that way) be able to open more than one databases in a single db file and thus could do something like:
 
 Database: aDb
 Column: a_id,ID
@@ -31,24 +30,20 @@ Database: bDb
 Column: b_id,ID
 Column: b_post,POST
 
-NOTE 2: You MUST NOT set an `Array` variable to be a column in a database that does not exist. This WILL cause the program to cash in this 
-current version
+NOTE 2: You MUST NOT set an `Array` variable to be a column in a database that does not exist. This WILL cause the program to crash in this current version
 
 THTML FILES
 ------------
-THTML files are like standard HTML files, with a few differences. Using their DB files, they can show database fields and thus return dynamicly
-generated html code, after being parsed by OOCms.
+THTML files are like standard HTML files, with a few differences. Using their DB files, they can show database fields and thus return dynamicly generated html code, after being parsed by OOCms.
 --Showing a variable--
-To show a variable, if it is of type `Int`, you only have to write [VAR_NAME] anywhere in your thtml file. However, if you want to show
-a variable of type `Array`, you must also specify the index of the value to show. The sytax for this is [VAR_NAME(INDEX)].
+To show a variable, if it is of type `Int`, you only have to write [VAR_NAME] anywhere in your thtml file. However, if you want to show a variable of type `Array`, you must also specify the index 
+of the value to show. The sytax for this is [VAR_NAME(INDEX)].
 --Looping--
-There is one more cool feature in thtml files. You can loop through a range of numbers. To do that, you actually initialize a variable of
-type `Int` with a certain value and loop through some code until you reach another value (you can loop both ways; from smaller to larger numbers
-or from larger to smaller numbers). All thtml code found between ~| and |~ is looped. To specify how many times you wish to loop through the code,
-you must write ~|[NEW_INT_VAR->STARTVALUE->ENDVALUE] looping code here|~, where STARTVALUE and ENDVALUE are either `Int` variables or numbers.
-But you haven't heard the best part yet ;D
-In fact, `Array` variables' passed index may be of type `Int` too, other than a number!
-Also, `Array` variables cannot be overloaded, so you can easily loop from 0 to, say, 5 while you only have two lines in your database!
+There is one more cool feature in thtml files. You can loop through a range of numbers. To do that, you actually initialize a variable of type `Int` with a certain value and loop through some 
+code until you reach another value (you can loop both ways; from smaller to bigger numbers or from bigger to smaller numbers). All thtml code found between ~| and |~ is looped. 
+To specify how many times you wish to loop through the code, you must write ~|[NEW_INT_VAR->STARTVALUE->ENDVALUE] looping code here|~, where STARTVALUE and ENDVALUE are either `Int` variables or numbers.
+But you haven't heard the best part yet ;D In fact, `Array` variables' passed index may be of type `Int` too, other than a number! Also, `Array` variables cannot be overloaded, so you can easily 
+loop from 0 to, say, 5 while you only have two lines in your database!
 Here is a sample thtml script to illustrate all that
 
 <!DOCTYPE html>
@@ -65,5 +60,5 @@ Here is a sample thtml script to illustrate all that
     </body>
 </html>
 
-This script, used in the IndexTemplate template given out with oocms, shows the last five news from database news. As you can see, we use
-a loop for that. Also, there is a link to the subpage allNews.thtml, wich also shows the number of news in the database.
+This script, used in the IndexTemplate template given out with oocms, shows the last five news from database news. As you can see, we use a loop for that. Also, there is a link to the subpage allNews.thtml, 
+wich also shows the number of news in the database.
