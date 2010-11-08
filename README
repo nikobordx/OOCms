@@ -1,0 +1,74 @@
+OOCms Version 0.1
+
+OOCms Quick Guide
+
+GENERAL
+-------
+OOCms is a CMS(Content Management System) wich can run as a CGI application(thanks to OOCgi) on any server
+that supports parsed header output. It is completely customizable, thanks to a "templat" system described below.
+When you load the CGI page with your browser, OOCms parses the query string that you pass in the address bar.
+It looks for a "page" argument, wich passes the name of the template to open and a "subpage" argument wich
+passes the name of the thtml and db file to parse. For example, oocms.cgi?page=news&subpage=allNews would make 
+oocms look for a template named "news" and open the allNews.thtml and allNews.db file located in the templates/news/
+If no subpage argument is passed, index is guessed. Similarly, if no page argument is passed, IndexTemplate is guessed.
+
+DB FILES
+--------
+DB files are the files wich "link" the database files to the thtml file. Using them, you can specify variables of two types
+that will later be used in the thtml files. There MUST be a db file for each thtml file, even if it is empty. There are 
+currently three commands that you can use in a db file. To use a command, you just have to write [CommandName]: [Arg1],[Arg2],...
+in your db file. Commands are executed in the order they are written. The first command is the Database command. Its first
+parameter is the name of the database to open, without the .csv extention. There is a second, optional argument. The second
+argument can either be DESCORDER[columnName] or ASCORDER[columnName]. On the first case, the database is ordered in a descending
+order based on the column named `columnName`. On the other case, the exact same happens but with ascending order. The second
+command is Column. It takes two arguments and is in fact a variable declaration. What the command does is that it sets a variable
+of type `Array`. Its first argument is the name of the variable to set. The second one is the name of the column in the currently opened
+database. Finally, there is the Count command. Like the Column command, it is a variable declaration, only this time of type `Int`. 
+It takes one parameter, the name of the variable to set and initializes it with the number of lines of the currently opened database.
+
+NOTE 1: You SHOULD(untested, but code is structured that way) be able to open more than one databases in a single db file and thus could 
+do something like:
+
+Database: aDb
+Column: a_id,ID
+Column: a_post,POST
+Database: bDb
+Column: b_id,ID
+Column: b_post,POST
+
+NOTE 2: You MUST NOT set an `Array` variable to be a column in a database that does not exist. This WILL cause the program to cash in this 
+current version
+
+THTML FILES
+------------
+THTML files are like standard HTML files, with a few differences. Using their DB files, they can show database fields and thus return dynamicly
+generated html code, after being parsed by OOCms.
+--Showing a variable--
+To show a variable, if it is of type `Int`, you only have to write [VAR_NAME] anywhere in your thtml file. However, if you want to show
+a variable of type `Array`, you must also specify the index of the value to show. The sytax for this is [VAR_NAME(INDEX)].
+--Looping--
+There is one more cool feature in thtml files. You can loop through a range of numbers. To do that, you actually initialize a variable of
+type `Int` with a certain value and loop through some code until you reach another value (you can loop both ways; from smaller to larger numbers
+or from larger to smaller numbers). All thtml code found between ~| and |~ is looped. To specify how many times you wish to loop through the code,
+you must write ~|[NEW_INT_VAR->STARTVALUE->ENDVALUE] looping code here|~, where STARTVALUE and ENDVALUE are either `Int` variables or numbers.
+But you haven't heard the best part yet ;D
+In fact, `Array` variables' passed index may be of type `Int` too, other than a number!
+Also, `Array` variables cannot be overloaded, so you can easily loop from 0 to, say, 5 while you only have two lines in your database!
+Here is a sample thtml script to illustrate all that
+
+<!DOCTYPE html>
+<html>
+    <head><title>Index Page - OOCms</title></head>
+    <body>
+        ~|[i->0->5]<div id="news">
+            <h1>[Title(i)]</h1>
+            <p>Posted at [Date(i)]</p>
+            <br/>
+            <p>[Contents(i)]</p>
+        </div>|~
+        <a href="index.cgi?page=index&subpage=allNews">[NewsCount] news in database</a>
+    </body>
+</html>
+
+This script, used in the IndexTemplate template given out with oocms, shows the last five news from database news. As you can see, we use
+a loop for that. Also, there is a link to the subpage allNews.thtml, wich also shows the number of news in the database.
