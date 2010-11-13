@@ -1,0 +1,232 @@
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+/* /////////////////////////////////       BACKGROUND        ///////////////////////////////// */
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+
+html, body
+{
+	margin : 0px;
+	padding : 0px;
+}
+
+html
+{
+	background-color : #D5FF8C;
+	font-family : Trebuchet MS , sans-serif;
+}
+
+
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+/* /////////////////////////////////    STRUCTURE GLOBALE    ///////////////////////////////// */
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+
+#conteneur
+{
+	width : 80%;
+	min-width : 600px;
+	margin : auto;
+	margin-top : 35px;
+	padding-bottom : 25px;
+}
+
+#corps
+{
+	width : 100%;
+	background-color : #D1FFB3;
+	color : #000000;
+}
+
+#marge_interieure
+{
+	padding : 5px;
+}
+
+
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+/* /////////////////////////////////        BANNIERE        ////////////////////////////////// */
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+
+#banniere
+{
+	height : 180px;
+	background : url("banniere.jpg") top left no-repeat;
+}
+
+
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+/* /////////////////////////////////          TEXTE          ///////////////////////////////// */
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+
+#texte 
+{
+	padding : 20px;
+	text-align : justify;
+	font-size : 15px;
+}
+
+.cadre
+{
+	border : 1px solid #32A83E;
+	background-color : #A2FF80;
+}
+
+.titre
+{
+	height : 26px;
+	background : url("cadre.png");
+	color : #1D9119;
+	text-align : center;
+	font-size : 14px;
+	font-weight : bold;
+	padding-top : 6px;
+}
+
+.marge_interne
+{
+	padding : 10px 10px 0px 10px;
+}
+
+p
+{
+	margin-top : 0px;
+}
+
+h1
+{
+	font-size : 19px;
+	margin-top : 0px;
+}
+
+h2
+{
+	font-size : 16px;
+	margin-top : 0px;
+}
+		
+a
+{
+	color : #288de8;
+	text-decoration : none;
+}
+
+a:hover
+{
+	color : #ff8000;
+}
+
+#overflow
+{
+	overflow : hidden;
+}
+
+
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+/* /////////////////////////////////     MENU HORIZONTAL     ///////////////////////////////// */
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+
+#MH
+{
+	width : 750px
+	height : 35px;
+	min-width : 600px;
+	background : url("MH.png") center no-repeat;
+	text-align : center;
+	margin : 0;
+	padding : 0;
+}
+
+#MH li
+{
+	display : inline;
+}
+
+#MH a
+{
+	height : 27px;
+	color : #91FFCF;
+	font-size : 14px;
+	font-weight : bold;
+	text-decoration : none;
+	padding-left : 20px;
+	padding-right : 20px;
+	padding-top : 8px;
+	display : inline-block;
+	margin : 0;
+}
+
+#MH a:hover
+{
+	color : #FFFFFF;
+	background : url("MH_hover.png");
+}
+
+
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+/* /////////////////////////////////         BORDURE         ///////////////////////////////// */
+/* /////////////////////////////////////////////////////////////////////////////////////////// */
+
+#CHG
+{
+	background : url("CHG.png") no-repeat top left;
+	float : left;
+	width : 11px;
+	height : 11px;
+	margin : 0px;
+}
+
+#CHD
+{
+	background : url("CHD.png") no-repeat top right;
+	float : right;
+	width : 11px;
+	height : 11px;
+	margin : 0px;
+}
+
+#CBG
+{
+	background : url("CBG.png") no-repeat bottom left;
+	float : left;
+	width : 11px;
+	height : 11px;
+	margin : 0px;
+}
+
+#CBD
+{
+	background : url("CBD.png") no-repeat bottom right;
+	float : right;
+	width : 11px;
+	height : 11px;
+	margin : 0px;
+}
+
+#BH
+{
+	background : url("BH.png") repeat-x top center;
+	margin-right : 11px;
+	margin-left : 11px;
+	height : 11px;
+}
+
+#BG
+{
+	background : url("BG.png") repeat-y left;
+	padding-left : 11px;
+	margin : 0px;
+}
+
+#BD
+{
+	background : url("BD.png") repeat-y right;
+	padding-right : 11px;
+	margin : 0px;
+}
+
+#BB
+{
+	background : url("BB.png") repeat-x bottom center;
+	margin-right : 11px;
+	margin-left : 11px;
+	height : 11px;
+	padding : 0px;
+}

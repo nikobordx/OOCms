@@ -1,0 +1,21 @@
+#CHG{margin-right : -11px; margin-bottom : -11px;}
+#CHD{margin-left : -11px; margin-bottom : -7px;}
+#CBG{margin-right : -11px; margin-top : -7px;}
+#CBD{margin-left : -11px; margin-top : -7px;}
+#BH{margin-bottom : -7px; margin-right : 11px; margin-left : 11px;}
+#BB{margin-top : -7px; margin-right : 11px; margin-left : 11px;}
+
+#conteneur
+{
+	width : 80%;
+	width : expression((document.body.clientWidth<=752) ? '600px' : '80%');
+}
+#banniere{width : expression((document.body.clientWidth<=602) ? '600px' : 'auto');}
+#MH{width : expression((document.body.clientWidth<=602) ? '600px' : 'auto');}
+
+#conteneur_1{padding-bottom : 25px;}
+
+html{font-family : sans-serif;}
+#banniere, #MH, #MV, #texte, #pied_de_page{font-family : Trebuchet MS , sans-serif;}
+
+#overflow{width : 99%;}

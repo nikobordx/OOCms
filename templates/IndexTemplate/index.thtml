@@ -1,13 +1,1 @@
-<!DOCTYPE html>
-<html>
-    <head><title>Index Page - OOCms</title></head>
-    <body>
-        ~|[i->0->5]<div id="news">
-            <h1>[Title(i)]</h1>
-            <p>Posted at [Date(i)]</p>
-            <br/>
-            <p>[Contents(i)]</p>
-        </div>|~
-        <a href="index.cgi?page=index&subpage=allNews">[NewsCount] news in database</a>
-    </body>
-</html>
+							~|[i->0->5]<div class="cadre"><div class="titre">[Title(i)]</div><div class="marge_interne">|~

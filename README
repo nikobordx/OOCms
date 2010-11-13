@@ -1,4 +1,4 @@
-OOCms Version 0.1
+OOCms Version 0.2
 
 OOCms Quick Guide
 
@@ -30,11 +30,10 @@ Database: bDb
 Column: b_id,ID
 Column: b_post,POST
 
-NOTE 2: You MUST NOT set an `Array` variable to be a column in a database that does not exist. This WILL cause the program to crash in this current version
-
 THTML FILES
 ------------
 THTML files are like standard HTML files, with a few differences. Using their DB files, they can show database fields and thus return dynamicly generated html code, after being parsed by OOCms.
+After generating the code returned by a THTML file, OOCms will replace it in a specific file, design/page.html. Any occurence of __[]__ will be replaced with this code.
 --Showing a variable--
 To show a variable, if it is of type `Int`, you only have to write [VAR_NAME] anywhere in your thtml file. However, if you want to show a variable of type `Array`, you must also specify the index 
 of the value to show. The sytax for this is [VAR_NAME(INDEX)].
@@ -46,19 +45,12 @@ But you haven't heard the best part yet ;D In fact, `Array` variables' passed in
 loop from 0 to, say, 5 while you only have two lines in your database!
 Here is a sample thtml script to illustrate all that
 
-<!DOCTYPE html>
-<html>
-    <head><title>Index Page - OOCms</title></head>
-    <body>
         ~|[i->0->5]<div id="news">
             <h1>[Title(i)]</h1>
             <p>Posted at [Date(i)]</p>
             <br/>
             <p>[Contents(i)]</p>
         </div>|~
-        <a href="index.cgi?page=index&subpage=allNews">[NewsCount] news in database</a>
-    </body>
-</html>
 
 This script, used in the IndexTemplate template given out with oocms, shows the last five news from database news. As you can see, we use a loop for that. Also, there is a link to the subpage allNews.thtml, 
 wich also shows the number of news in the database.
