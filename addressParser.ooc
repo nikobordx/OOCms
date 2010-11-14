@@ -24,11 +24,8 @@ AddressParser : class // class that parses the query passed to CGI object and st
         for(i in 0 .. cgi getArray size)
         {
             key := cgi getArray getKeys() get(i)
-            if(key != "page")
-            {
-                val := cgi getArray getAll(key)
-                getParams[key] = val
-            }
+            val := cgi getArray getAll(key)
+            getParams[key] = val
         }
         postParams = cgi postArray
     }
