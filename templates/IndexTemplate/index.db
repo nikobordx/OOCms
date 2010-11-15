@@ -1,6 +1,0 @@
-Database: news,DESCORDER[id]
-Column: Title,title
-Column: Date,date
-Column: Contents,contents
-Count: NewsCount
-Line: id,0,SomeLine

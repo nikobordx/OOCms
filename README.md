@@ -1,9 +1,8 @@
 OOCms Version 0.5
-
-OOCms Quick Guide
+=================
 
 GENERAL
-=======
+-------
 OOCms is a CMS(Content Management System) wich can run as a CGI application(thanks to OOCgi) on any server that supports parsed header output. It is completely customizable, 
 thanks to a "template" system described below. When you load the CGI page with your browser, OOCms parses the query string that you pass in the address bar. It looks for a "page" 
 argument, wich passes the name of the template to open and a "subpage" argument wich passes the name of the thtml and db file to parse. For example, oocms.cgi?page=news&subpage=allNews 
@@ -11,7 +10,7 @@ would make oocms look for a template named "news" and open the allNews.thtml and
 Similarly, if no page argument is passed, IndexTemplate is guessed.
 
 THTML Language
-==============
+---------------
 To write templates for oocms, you must use THTML code.
 THTML files are just like normal HTML files but in addition to that, they contain the THTML code wich will be parse by oocms.
 After the code is parsed and the dynamic content is generated, oocms will look for design/page.html file and replace any occurence of __[]__ with the content previously generated.
@@ -82,10 +81,10 @@ To specify a loop, you must do [TempVar->StartValue->EndValue]. For example, her
     ~|[i->0->NewsCount]
         <h1>__{Show: Title(i)}__</h1><br/>
         <em><p>Posted at __{Show: Date(i)}__</p></em><br/>
-        <p>__{Show: Contents(i)}__
+        <p>__{Show: Contents(i)}__</p>
     |~
 
-Note that nested blocks are possible (finally! [but after a lot of eadaches -__-']), and that the starting value of a loop can be greater than its ending value ;)
+Note that nested blocks are possible (finally! [but after a lot of headaches -__-']), and that the starting value of a loop can be greater than its ending value ;)
 That's all for now =D
 
 
