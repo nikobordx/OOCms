@@ -25,7 +25,9 @@ where num is an Int variable or a number. Similarly, to do that with a Map, you 
 
     MapName(str)
 
-where str is a String variable or a string (no need for quoted in THTML)
+where str is a String variable or a string (no need for quoted in THTML). You can also "fusion" variables of Int and String type by doing someThing{blah}someThingElse. This will parse 
+someThing, get its value (wether its a variable, Int or String, or a string), do the same for blah and someThingElse and add up the values. The resulting string will be resolved again
+so if you have {a}S{c{d}}(lol) where a = _PO, and cd = T and _POST(lol) = haha!, haha! will be the reult. 
 
 Then, there are functions. In THTML, functions are used by writing:
 
@@ -60,7 +62,8 @@ Prints the values of the array named varName (if it is NULL, nothing will be pri
 In addition to these, there should be MapPrint coming soon.
 
 OOCms sets two variables by default, of type Map, named _GET and _POST, wich contain the get and post HTTP request parameters.
-Also, there is a special variable named NULL, wich is used for conditions and is the same as the NULL keyword is in other languages.
+Also, there is a special variable named NULL, wich is used for conditions and is the same as the NULL keyword is in other languages and another one named '
+wich counted as a space (spaces are stripped on parsing, so i made this little helper ;p)
 Finaly, there is one more interesting feature in THTML, blocks.
 Blocks are either loops or conditions.
 A block starts with ~| and ends with |~ and doesnt need to be surrounded by __{ and }__

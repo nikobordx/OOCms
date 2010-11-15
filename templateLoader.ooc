@@ -84,6 +84,33 @@ TemplateLoader : class // class that takes care of loading the template's databa
     resolveVariable : func (var : String) -> String // code that takes the name of a variable and returns its value
     {
         //TODO: add contencation using {} (for example hell{o} will give hello and then hello will be resolved or _POST(colIndex{i}), where i is loop var will give _POST(colIndex0),_POST(colIndex1),...
+        openFusion := var find("{",0)//get the opening fusion symbol index
+        closeFusion : SSizeT = -1
+        closeFusions := var findAll("}")
+        // this is basically for nested blocks but i reuse it here for nested fusions :)
+        if(openFusion != -1 && var findAll("{") size == closeFusions size)
+        {
+            for(i in 0 .. closeFusions size)// we iterate the closing fusion symbols
+            {
+                test := var substring(openFusion+1,closeFusions get(i))//we make a substring out of the fusion symbols
+                if(test findAll("{") size == test findAll("}") size)// if there is the same number of opening and closing fusion symbols in this substring
+                {
+                    closeFusion = closeFusions get(i)// this means we have a valid fusion =) 
+                    break// break the loop :)
+                }
+            }
+        
+            if(closeFusion != -1)
+            {
+                fusionRet := resolveVariable(var substring(openFusion+1,closeFusion)) // get the var returned by fusion
+                left := resolveVariable(var substring(0,openFusion)) // get the var on the left of the fusion
+                right := resolveVariable(var substring(closeFusion+1)) // and the one on the right
+                var = left// add
+                var = (var == null) ? fusionRet : var+fusionRet// them
+                var = (var == null) ? right : var+right// up
+            }
+        }
+    
         for(i in 0 .. countVars size)// search for it in our count variables
         {
             key := countVars getKeys() get(i)
@@ -100,19 +127,10 @@ TemplateLoader : class // class that takes care of loading the template's databa
         
         if(index != varn)
         {
-            nIndex : String
+            nIndex := (index toInt() == 0 && index != "0") ? resolveVariable(index) : index
             
-            if(index toInt() == 0 && index != "0" && index != resolveVariable(index))
-            {
-                // variable in index :p 
-                nIndex = resolveVariable(index)
-            }
-            else if(index toInt() != 0)
-            {
-                nIndex = index
-            }
             // ok, now we have a number in there :p
-            if(nIndex != null)
+            if(nIndex != null && arrays get(varn) != null)
             {
                 if((arrays get(varn) array size > nIndex toInt()))
                 {
@@ -121,13 +139,13 @@ TemplateLoader : class // class that takes care of loading the template's databa
                         return arrays get(varn) array get(nIndex toInt())// send back value
                     }
                 }
-                else if(arrays get(varn) array != null && nIndex toInt() >= arrays get(varn) array size) // this array exists, however we are overloading its buffer!
+                else if(nIndex toInt() >= arrays get(varn) array size) // this array exists, however we are overloading its buffer!
                 {
                     return null// return null ;)
                 }
             }
             
-            if(maps != null && maps get(varn) map != null)
+            if(maps != null && maps get(varn) != null)
             {
                 if(maps get(varn) map get(index) != null)// search into maps
                 {
@@ -145,6 +163,7 @@ TemplateLoader : class // class that takes care of loading the template's databa
         }
         
         var = (var == "NULL") ? null : var // NULL keyword ;D
+        var = (var == "'") ? " " : var // ' pseudo-variable 
     
         return var // else just send back the string that was passed to be resolved (String type :p)
     }
