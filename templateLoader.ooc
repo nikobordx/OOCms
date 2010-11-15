@@ -35,7 +35,6 @@ TemplateLoader : class // class that takes care of loading the template's databa
     load : func(ap : AddressParser)
     {
         file := "templates/"+ap template+"/"+((ap getParams get("subpage") == null) ? "index.thtml" : ap getParams get("subpage")+".thtml") // path of template html file to parse
-        dbFile := "templates/"+ap template+"/"+((ap getParams get("subpage") == null) ? "index.db" : ap getParams get("subpage")+".db") // path of database specification file to parse
     
         tempGetMap := StrStrMapContainer new()
         for(i in 0 .. ap getParams size)
@@ -51,8 +50,7 @@ TemplateLoader : class // class that takes care of loading the template's databa
         maps["_POST"] = tempPostMap
     
         getDesign()
-        parseDb(dbFile)// parse db file
-        parseFile(file)// and thtml file =D
+        parseFile(file)// parse thtml file =D
         
     }
     getDesign : func ()
@@ -68,191 +66,13 @@ TemplateLoader : class // class that takes care of loading the template's databa
             status = "404"
         }
     }
-    parseDb : func (file : String) // parses .db file to import column and stuff :p
-    {
-        freader := File new(file)
-        if(freader exists?())
-        {
-            data := freader read()
-        
-            inFuncName := true
-            inFuncArgs := false
-            funcName : String
-            funcArgs := ArrayList<String> new()
-            temp : String
-            
-            for(i in 0 .. data size)
-            {
-                if(data[i] == ':' && inFuncName)
-                {
-                    inFuncName = false
-                    inFuncArgs = true
-                    funcName = temp
-                    temp = ""
-                }
-                else if(data[i] == ',' && inFuncArgs)
-                {
-                    funcArgs add(temp)
-                    temp = ""
-                }
-                else if((data[i] == '\n' || i == data size-1) && inFuncArgs)
-                {
-                    funcArgs add(temp)
-                    temp = ""
-                    inFuncArgs = false
-                    inFuncName = true
-                    if(funcName == "Database")
-                    {
-                        if(funcArgs size > 0)
-                        {
-                            db = Database new("databases/"+resolveVariable(funcArgs get(0))+".csv")
-                            if(funcArgs size > 1)
-                            {
-                                if(funcArgs get(1) startsWith?("DESCORDER"))
-                                {
-                                    temp = funcArgs get(1) substring(10,funcArgs get(1) size-1) // and here we have our column name ;D
-                                    db sortDescending(resolveVariable(temp))
-                                }
-                                else if(funcArgs get(1) startsWith?("ASCORDER"))
-                                {
-                                    temp = funcArgs get(1) substring(9,funcArgs get(1) size-1)
-                                    db sortAscending(resolveVariable(temp))
-                                }
-                            }
-                            temp = ""
-                        }
-                    }
-                    else if(funcName == "Column")
-                    {
-                        if(funcArgs size > 1)
-                        {
-                            if(db selectColumn(funcArgs get(1)) != null)
-                            {
-                                tempArray := ArrayList<String> new()
-                                for(j in 0 .. db selectColumn(resolveVariable(funcArgs get(1))) fields size)
-                                {
-                                    tempArray add(db selectColumn(resolveVariable(funcArgs get(1))) fields get(j) data)
-                                }
-                                tempContainer := StrListContainer new()
-                                tempContainer array = tempArray
-                                arrays[funcArgs get(0)] = tempContainer
-                            }
-                        }
-                    }
-                    else if(funcName == "Count")
-                    {
-                        if(funcArgs size > 0)
-                        {
-                            if(db columns != null)
-                            {
-                                countVars[funcArgs get(0)] = ("%d" format(db columns get(0) fields size))
-                            }
-                        }
-                    }
-                    else if(funcName == "Line")
-                    {
-                        if(funcArgs size > 2)
-                        {
-                            fields := db selectLine(resolveVariable(funcArgs get(0)),resolveVariable(funcArgs get(1)))
-                            if(fields != null && fields size > 0)
-                            {
-                                if(fields size == db columns size)
-                                {
-                                    tempMap := StrStrMapContainer new()
-                                    for(i in 0 .. fields size)
-                                    {
-                                        tempMap map[db columns get(i) name] = fields get(i) data
-                                    }
-                                    maps[funcArgs get(2)] = tempMap
-                                }
-                            }
-                        }
-                    }
-                    funcName = ""
-                    funcArgs clear()
-                }
-                else if(data[i] != '\r' && data[i] != '\n' && data[i] != ' ')
-                {
-                    temp = (temp == null || temp == "") ? data[i] as String : temp + data[i] as String
-                }
-            }
-        }
-        else
-        {
-            status = "404"
-        }
-    }
-    
     parseFile : func (file : String)
     {
         freader := File new(file)
         if(freader exists?())
         {
             data := freader read()
-            // Method : Lookup for ~| ... |~ loops
-            // In those loops, change the [...] into data
-            // Outside these, find [...] and if they contain ARRAY[INT] types, replace data, else leave them be
-            opens := data findAll("~|")
-            closes := data findAll("|~")
-            newData : String
-            if(opens size == closes size) // if all loops are opened and closed
-            {
-                newData = parseChunk(data substring(0,opens get(0)))
-                
-                for(i in 0 .. opens size)
-                {
-                    toParse := data substring(opens get(i)+2,closes get(i)) // get loop contents
-                    if(i-1 >= 0)
-                    {
-                        newData += parseChunk(data substring(closes get(i-1)+2,opens get(i))) // parse text between two loops
-                    }
-                    // loop =D
-                    times := toParse substring(toParse find("[",0)+1,toParse find("]",0)) // get first [...] chunk, should contain loop times
-                    toParse = toParse substring(toParse find("]",0)+1) // remove this chunk from being parsed
-                    toReplace := times substring(0,times find("->",0))// get the loop's "variable" name
-                    loopCount := times substring(times find("->",0)+2)//get loopcount data
-                    start := loopCount substring(0,loopCount find("->",0))
-                    startIndex : Int
-                    if(start toInt() == 0 && start != "0") // if this is not an Int value
-                    {
-                        //It SHOULD be a count variable
-                        startIndex = resolveVariable(start) toInt()
-                    }
-                    else
-                    {
-                        startIndex = start toInt()
-                    }
-                    end := loopCount substring(loopCount find("->",0)+2)
-                    endIndex : Int
-                    if(end toInt() == 0 && end != "0") // if this is not an Int value
-                    {
-                        //It SHOULD be a count variable
-                        endIndex = resolveVariable(end) toInt()
-                    }
-                    else
-                    {
-                        endIndex = end toInt()
-                    }
-                    
-                    index := startIndex
-                    while(index != endIndex)
-                    {
-                        countVars[toReplace] = ("%d" format(index))// create a temp variable for the loop variable 
-                        moreData := parseChunk(toParse)
-                        countVars remove(toReplace)
-                        if(moreData != null)// parse the code chunk
-                        {
-                            newData += moreData
-                        }
-                        index = (index < endIndex) ? index+1 : index-1
-                    }
-                }
-                newData += parseChunk(data substring(closes get(closes size-1)+2))
-            }
-            else
-            {
-                newData = data
-            }
+            newData := parseChunk(data)
             contents = base replaceAll("__[]__",newData)
         }
         else
@@ -263,6 +83,7 @@ TemplateLoader : class // class that takes care of loading the template's databa
     
     resolveVariable : func (var : String) -> String // code that takes the name of a variable and returns its value
     {
+        //TODO: add contencation using {} (for example hell{o} will give hello and then hello will be resolved or _POST(colIndex{i}), where i is loop var will give _POST(colIndex0),_POST(colIndex1),...
         for(i in 0 .. countVars size)// search for it in our count variables
         {
             key := countVars getKeys() get(i)
@@ -300,33 +121,137 @@ TemplateLoader : class // class that takes care of loading the template's databa
                         return arrays get(varn) array get(nIndex toInt())// send back value
                     }
                 }
+                else if(arrays get(varn) array != null && nIndex toInt() >= arrays get(varn) array size) // this array exists, however we are overloading its buffer!
+                {
+                    return null// return null ;)
+                }
             }
             
-            if(maps != null && maps get(varn) != null)
+            if(maps != null && maps get(varn) map != null)
             {
                 if(maps get(varn) map get(index) != null)// search into maps
                 {
                     return maps get(varn) map get(index)
                 }
-                else
+                else if(maps get(varn) map get(resolveVariable(index)) != null)// search into maps
                 {
-                    if(maps get(varn) map get(resolveVariable(index)) != null)
-                    {
-                        return maps get(varn) map get(resolveVariable(index))
-                    }
+                    return maps get(varn) map get(resolveVariable(index))
+                }
+                else// ow..there is a map, but no such element
+                {
+                    return null // ~NULL FTW~
                 }
             }
         }
         
-        return var // else just send back the string that was passed to be resolved
+        var = (var == "NULL") ? null : var // NULL keyword ;D
+    
+        return var // else just send back the string that was passed to be resolved (String type :p)
     }
     
     parseChunk : func (chunk : String) -> String
     {
         ret := chunk
+        openLoop := chunk find("~|",0)//get the opening block symbol index
+        closeLoop : SSizeT = -1
+        closeLoops := chunk findAll("|~")
+        // this is basically for nested blocks ;)
+        if(openLoop != -1 && chunk findAll("~|") size == closeLoops size)
+        {
+            for(i in 0 .. closeLoops size)// we iterate the closing block symbols
+            {
+                test := chunk substring(openLoop+2,closeLoops get(i))//we make a substring out of the opening block - closing block
+                if(test findAll("~|") size == test findAll("|~") size)// if there is the same number of opening and closing blocks in this substring
+                {
+                    closeLoop = closeLoops get(i)// this means we have a valid block 
+                    break// break the loop :)
+                }
+            }
+
+        }
+        if(openLoop != -1 && closeLoop != -1 && chunk[openLoop+2] == '[') // if we DO have a block
+        {
+            insides := chunk substring(openLoop+3,chunk find("]",openLoop+2))//get the loop declaration
+            if(insides findAll("->") size == 2) // if we have a correct loop declaration
+            {
+                begin := parseChunk(chunk substring(0,openLoop))
+                toReplace := insides substring(0,insides find("->",0))//find the name of the loop variable
+                start := resolveVariable(insides substring(insides find("->",0)+2,insides findAll("->") get(1))) // get the starting value of the loop
+                end := resolveVariable(insides substring(insides findAll("->") get(1)+2))// get the ending value of the loop
+                loopReturn : String
+            
+                index := start toInt()//get int values...
+                endIndex := end toInt()//...to loop in
+                while(index != endIndex)//...ooc loop ^^
+                {
+                    countVars[toReplace] = ("%d" format(index))// create the loop variable 
+                    moreData := parseChunk(chunk substring(chunk find("]",openLoop+2)+1,closeLoop))// parse the insides of the loop
+                    countVars remove(toReplace)// remove the loop variable :) 
+                    if(moreData != null)
+                    {
+                        loopReturn = (loopReturn == null) ? moreData : loopReturn+moreData
+                    }
+                    index = (index < endIndex) ? index+1 : index-1
+                }
+                close := parseChunk(chunk substring(closeLoop+2))
+                ret = (begin != null) ? begin : null
+                ret = (loopReturn != null) ? ((ret != null) ? ret + loopReturn : loopReturn) : ret
+                ret = (close != null) ? ((ret != null) ? ret + close : close) : ret
+                return ret
+            }
+            else // maybe its a condition D:
+            {
+                insides := chunk substring(openLoop+3,chunk find("]",openLoop+2))//get the condition declaration
+                if(insides findAll("==") size == 1)
+                {
+                    if(resolveVariable(insides substring(0,insides find("==",0))) == resolveVariable(insides substring(insides find("==",0)+2)))
+                    {
+                        // execute block! :) 
+                        begin := parseChunk(chunk substring(0,openLoop))
+                        close := parseChunk(chunk substring(closeLoop+2))
+                        loopReturn := parseChunk(chunk substring(chunk find("]",openLoop+2)+1,closeLoop))// parse the insides of the block
+                        ret = (begin != null) ? begin : null
+                        ret = (loopReturn != null) ? ((ret != null) ? ret + loopReturn : loopReturn) : ret
+                        ret = (close != null) ? ((ret != null) ? ret + close : close) : ret
+                        return ret
+                    }
+                    else
+                    {
+                        begin := parseChunk(chunk substring(0,openLoop))
+                        close := parseChunk(chunk substring(closeLoop+2))
+                        ret = (begin != null) ? begin : null
+                        ret = (close != null) ? ((ret != null) ? ret + close : close) : ret
+                        return ret
+                    }
+                }
+                else if(insides findAll("!=") size == 1)
+                {
+                    if(resolveVariable(insides substring(0,insides find("!=",0))) != resolveVariable(insides substring(insides find("!=",0)+2)))
+                    {
+                        // execute block! :) 
+                        begin := parseChunk(chunk substring(0,openLoop))
+                        close := parseChunk(chunk substring(closeLoop+2))
+                        loopReturn := parseChunk(chunk substring(chunk find("]",openLoop+2)+1,closeLoop))// parse the insides of the block
+                        ret = (begin != null) ? begin : null
+                        ret = (loopReturn != null) ? ((ret != null) ? ret + loopReturn : loopReturn) : ret
+                        ret = (close != null) ? ((ret != null) ? ret + close : close) : ret
+                        return ret
+                    }
+                    else
+                    {
+                        begin := parseChunk(chunk substring(0,openLoop))
+                        close := parseChunk(chunk substring(closeLoop+2))
+                        ret = (begin != null) ? begin : null
+                        ret = (close != null) ? ((ret != null) ? ret + close : close) : ret
+                        return ret
+                    }
+                }
+            }
+        }
+    
         opens := chunk findAll("__{")
         closes := chunk findAll("}__")
-        if(opens size == closes size)
+        if(opens size == closes size && opens != 0)
         {
             for(j in 0 .. opens size)
             {
@@ -363,7 +288,11 @@ TemplateLoader : class // class that takes care of loading the template's databa
                         {
                             if(funcArgs size > 0)// If we have our argument ;)
                             {
-                                result = (result == null) ? resolveVariable(funcArgs get(0)) : result+resolveVariable(funcArgs get(0)) // add variable value to return string
+                                returned := resolveVariable(funcArgs get(0))
+                                if(returned != null)
+                                {
+                                    result = (result == null) ? returned : result+returned // add variable value to return string
+                                }
                             }
                         }
                         else if(funcName == "ArrayPrint")// arrayPrint function
@@ -381,15 +310,104 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                 }
                             }
                         }
+                        else if(funcName == "Database")
+                        {
+                            if(funcArgs size > 0)
+                            {
+                                rsv1 := resolveVariable(funcArgs get(0))
+                                if(rsv1 != null)
+                                {
+                                    db = Database new("databases/"+rsv1+".csv")
+                                    if(funcArgs size > 1)
+                                    {
+                                        if(funcArgs get(1) startsWith?("DESCORDER"))
+                                        {
+                                            temp = funcArgs get(1) substring(10,funcArgs get(1) size-1) // and here we have our column name ;D
+                                            rsv2 := resolveVariable(temp)
+                                            if(rsv2 != null)
+                                            {
+                                                db sortDescending(rsv2)
+                                            }
+                                        }
+                                        else if(funcArgs get(1) startsWith?("ASCORDER"))
+                                        {
+                                            temp = funcArgs get(1) substring(9,funcArgs get(1) size-1)
+                                            rsv2 := resolveVariable(temp)
+                                            if(rsv2 != null)
+                                            {
+                                                db sortAscending(rsv2)
+                                            }
+                                        }
+                                    }
+                                }
+                                temp = ""
+                            }
+                        }
+                        else if(funcName == "Column")
+                        {
+                            if(funcArgs size > 1)
+                            {
+                                if(db selectColumn(funcArgs get(1)) != null)
+                                {
+                                    tempArray := ArrayList<String> new()
+                                    rsv := resolveVariable(funcArgs get(1))
+                                    if(rsv != null)
+                                    {
+                                        col := db selectColumn(rsv)
+                                        for(j in 0 .. col fields size)
+                                        {
+                                            tempArray add(col fields get(j) data)
+                                        }
+                                        tempContainer := StrListContainer new()
+                                        tempContainer array = tempArray
+                                        arrays[funcArgs get(0)] = tempContainer
+                                    }
+                                }
+                            }
+                        }
+                        else if(funcName == "Count")
+                        {
+                            if(funcArgs size > 0)
+                            {
+                                if(db columns != null)
+                                {
+                                    countVars[funcArgs get(0)] = ("%d" format(db columns get(0) fields size))
+                                }
+                            }
+                        }
+                        else if(funcName == "Line")
+                        {
+                            if(funcArgs size > 2)
+                            {
+                                rsv1 := resolveVariable(funcArgs get(0))
+                                rsv2 := resolveVariable(funcArgs get(1))
+                                if(rsv1 != null && rsv2 != null)
+                                {
+                                    fields := db selectLine(rsv1,rsv2)
+                                    if(fields != null && fields size > 0)
+                                    {
+                                        if(fields size == db columns size)
+                                        {
+                                            tempMap := StrStrMapContainer new()
+                                            for(i in 0 .. fields size)
+                                            {
+                                                tempMap map[db columns get(i) name] = fields get(i) data
+                                            }
+                                            maps[funcArgs get(2)] = tempMap
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         funcName = ""
                         funcArgs clear()
                     }
-                    else if(data[i] != '\r' && data[i] != '\n' && data[i] != ' ')
+                    else if(data[i] != '\r' && data[i] != '\n' && data[i] != ' ' && data[i] != '\t')
                     {
                         temp = (temp == null || temp == "") ? data[i] as String : temp + data[i] as String
                     }
                 }
-                ret = ret replaceAll("__{"+data+"}__",result)
+                ret = (result != null) ? ret replaceAll("__{"+data+"}__",result) : ret replaceAll("__{"+data+"}__","")
             }
         }
         ret

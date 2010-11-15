@@ -1,33 +1,47 @@
+__{
+Database: news,DESCORDER[id]
+Column: Title,title
+Column: Date,date
+Column: Contents,contents
+Count: NewsCount
+Line: id,0,SomeLine
+}__
+
 ~|[i->0->5]
-<div class="cadre">
-    <div class="titre">
-        __{Show: Title(i)}__
+    ~|[Title(i)!=NULL]
+    <div class="cadre">
+        <div class="titre">
+            __{Show: Title(i)}__
+        </div>
+        <div class="marge_interne">
+            <em>
+                Posted at __{Show: Date(i)}__
+            </em>
+            <br/>
+            <br/>
+            __{Show: Contents(i)}__
+        </div>
     </div>
-    <div class="marge_interne">
-        <em>
-            Posted at __{Show: Date(i)}__
-        </em>
-        <br/>
-        <br/>
-        __{Show: Contents(i)}__
-    </div>
-</div>
+        ~|[1==1]
+        <p>My first condition!</p>
+        |~
+    |~
 |~
 <a href="oocms.cgi?page=index&subpage=allNews">Show all __{Show: NewsCount}__ news!</a>
 
-
 On a sidenote, here is your get thingy __{Show: _GET(thingy)}__<br/>
 Oh! Almost forgot! Here is a post thingy __{Show: _POST(thingy)}__<br/>
-And one more thing! Here is the title of the first news ;) __{Show: SomeLine(title)}__
+And one more thing! Here is the title of the first news ;) __{Show: SomeLine(title)}__ 
 
 You can haz arrayPrint!<br/>
 __{
-    ArrayPrint: Title
+ArrayPrint: Title
 }__
 <br/>
 You can haz more arrayPrint!<br/>
 __{
-    ArrayPrint: Date
+ArrayPrint: Date
 }__
 <br/>
 I think thats enough :p
+
