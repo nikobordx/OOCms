@@ -32,6 +32,38 @@ TemplateLoader : class // class that takes care of loading the template's databa
     {
     }
     
+    loadConfig : func() -> StrStrMapContainer
+    {
+        file := File new("config/oocms.cfg")
+        data := file read()
+        ret := StrStrMapContainer new()
+        part1 : String
+        temp : String = ""
+        for(i in 0 .. data size)
+        {
+            if(data[i] == ':')
+            {
+                part1 = temp
+                temp = ""
+            }
+            else if(data[i] == '\n' || i == data size - 1)
+            {
+                if(i == data size - 1 && data[i] != '\n')
+                {
+                    temp += data[i]
+                }
+                ret map[part1] = temp
+                temp = ""
+                part1 = ""
+            }
+            else if(data[i] != '\n' && data[i] != '\r')
+            {
+                temp += data[i]
+            }
+        }
+        ret
+    }
+    
     load : func(ap : AddressParser)
     {
         file := "templates/"+ap template+"/"+((ap getParams get("subpage") == null) ? "index.thtml" : ap getParams get("subpage")+".thtml") // path of template html file to parse
@@ -48,6 +80,8 @@ TemplateLoader : class // class that takes care of loading the template's databa
             tempPostMap map[ap postParams getKeys() get(i)] = ap postParams get(ap postParams getKeys() get(i))
         }
         maps["_POST"] = tempPostMap
+    
+        maps["_CONFIG"] = loadConfig()
     
         getDesign()
         parseFile(file)// parse thtml file =D
@@ -103,8 +137,8 @@ TemplateLoader : class // class that takes care of loading the template's databa
             if(closeFusion != -1)
             {
                 fusionRet := resolveVariable(var substring(openFusion+1,closeFusion)) // get the var returned by fusion
-                left := resolveVariable(var substring(0,openFusion)) // get the var on the left of the fusion
-                right := resolveVariable(var substring(closeFusion+1)) // and the one on the right
+                left := var substring(0,openFusion) // get the var on the left of the fusion
+                right := var substring(closeFusion+1) // and the one on the right
                 var = left// add
                 var = (var == null) ? fusionRet : var+fusionRet// them
                 var = (var == null) ? right : var+right// up
@@ -171,16 +205,16 @@ TemplateLoader : class // class that takes care of loading the template's databa
     parseChunk : func (chunk : String) -> String
     {
         ret := chunk
-        openLoop := chunk find("~|",0)//get the opening block symbol index
+        openLoop := chunk find("{",0)//get the opening block symbol index
         closeLoop : SSizeT = -1
-        closeLoops := chunk findAll("|~")
+        closeLoops := chunk findAll("}")
         // this is basically for nested blocks ;)
-        if(openLoop != -1 && chunk findAll("~|") size == closeLoops size)
+        if(openLoop != -1 && chunk findAll("{") size == closeLoops size)
         {
             for(i in 0 .. closeLoops size)// we iterate the closing block symbols
             {
-                test := chunk substring(openLoop+2,closeLoops get(i))//we make a substring out of the opening block - closing block
-                if(test findAll("~|") size == test findAll("|~") size)// if there is the same number of opening and closing blocks in this substring
+                test := chunk substring(openLoop+1,closeLoops get(i))//we make a substring out of the opening block - closing block
+                if(test findAll("{") size == test findAll("}") size)// if there is the same number of opening and closing blocks in this substring
                 {
                     closeLoop = closeLoops get(i)// this means we have a valid block 
                     break// break the loop :)
@@ -188,15 +222,22 @@ TemplateLoader : class // class that takes care of loading the template's databa
             }
 
         }
-        if(openLoop != -1 && closeLoop != -1 && chunk[openLoop+2] == '[') // if we DO have a block
+        
+        
+        if(openLoop != -1 && closeLoop != -1 && chunk[openLoop+1] == '[') // if we DO have a block
         {
-            insides := chunk substring(openLoop+3,chunk find("]",openLoop+2))//get the loop declaration
-            if(insides findAll("->") size == 2) // if we have a correct loop declaration
+            insides := chunk substring(openLoop+2,chunk find("]",openLoop+1))//get the loop declaration
+            insides = insides replaceAll(" ","")// Remove spaces ;)
+            insides = insides replaceAll("\n","")//And remove newlines =)
+        
+            toReplace := insides substring(0,insides find(":",0))
+            part2 := insides substring(insides find(":",0)+1)
+            if(toReplace != insides && part2 != null)
             {
                 begin := parseChunk(chunk substring(0,openLoop))
-                toReplace := insides substring(0,insides find("->",0))//find the name of the loop variable
-                start := resolveVariable(insides substring(insides find("->",0)+2,insides findAll("->") get(1))) // get the starting value of the loop
-                end := resolveVariable(insides substring(insides findAll("->") get(1)+2))// get the ending value of the loop
+                start := resolveVariable(part2 substring(0,part2 find("..",0)))
+                end := resolveVariable(part2 substring(part2 find("..",0)+2))
+        
                 loopReturn : String
             
                 index := start toInt()//get int values...
@@ -204,7 +245,8 @@ TemplateLoader : class // class that takes care of loading the template's databa
                 while(index != endIndex)//...ooc loop ^^
                 {
                     countVars[toReplace] = ("%d" format(index))// create the loop variable 
-                    moreData := parseChunk(chunk substring(chunk find("]",openLoop+2)+1,closeLoop))// parse the insides of the loop
+                    moreData := parseChunk(chunk substring(chunk find("]",openLoop+1)+1,closeLoop))// parse the insides of the loop
+                    
                     countVars remove(toReplace)// remove the loop variable :) 
                     if(moreData != null)
                     {
@@ -212,7 +254,7 @@ TemplateLoader : class // class that takes care of loading the template's databa
                     }
                     index = (index < endIndex) ? index+1 : index-1
                 }
-                close := parseChunk(chunk substring(closeLoop+2))
+                close := parseChunk(chunk substring(closeLoop+1))
                 ret = (begin != null) ? begin : null
                 ret = (loopReturn != null) ? ((ret != null) ? ret + loopReturn : loopReturn) : ret
                 ret = (close != null) ? ((ret != null) ? ret + close : close) : ret
@@ -220,15 +262,18 @@ TemplateLoader : class // class that takes care of loading the template's databa
             }
             else // maybe its a condition D:
             {
-                insides := chunk substring(openLoop+3,chunk find("]",openLoop+2))//get the condition declaration
+                // TODO : CHANGE THIS, TOO MUCH REPETITION
+                insides := chunk substring(openLoop+2,chunk find("]",openLoop+1))//get the loop declaration
+                insides = insides replaceAll(" ","")// Remove spaces ;)
+                insides = insides replaceAll("\n","")//And remove newlines =)
                 if(insides findAll("==") size == 1)
                 {
                     if(resolveVariable(insides substring(0,insides find("==",0))) == resolveVariable(insides substring(insides find("==",0)+2)))
                     {
                         // execute block! :) 
                         begin := parseChunk(chunk substring(0,openLoop))
-                        close := parseChunk(chunk substring(closeLoop+2))
-                        loopReturn := parseChunk(chunk substring(chunk find("]",openLoop+2)+1,closeLoop))// parse the insides of the block
+                        close := parseChunk(chunk substring(closeLoop+1))
+                        loopReturn := parseChunk(chunk substring(chunk find("]",openLoop+1)+1,closeLoop))// parse the insides of the block
                         ret = (begin != null) ? begin : null
                         ret = (loopReturn != null) ? ((ret != null) ? ret + loopReturn : loopReturn) : ret
                         ret = (close != null) ? ((ret != null) ? ret + close : close) : ret
@@ -237,7 +282,7 @@ TemplateLoader : class // class that takes care of loading the template's databa
                     else
                     {
                         begin := parseChunk(chunk substring(0,openLoop))
-                        close := parseChunk(chunk substring(closeLoop+2))
+                        close := parseChunk(chunk substring(closeLoop+1))
                         ret = (begin != null) ? begin : null
                         ret = (close != null) ? ((ret != null) ? ret + close : close) : ret
                         return ret
@@ -249,8 +294,8 @@ TemplateLoader : class // class that takes care of loading the template's databa
                     {
                         // execute block! :) 
                         begin := parseChunk(chunk substring(0,openLoop))
-                        close := parseChunk(chunk substring(closeLoop+2))
-                        loopReturn := parseChunk(chunk substring(chunk find("]",openLoop+2)+1,closeLoop))// parse the insides of the block
+                        close := parseChunk(chunk substring(closeLoop+1))
+                        loopReturn := parseChunk(chunk substring(chunk find("]",openLoop+1)+1,closeLoop))// parse the insides of the block
                         ret = (begin != null) ? begin : null
                         ret = (loopReturn != null) ? ((ret != null) ? ret + loopReturn : loopReturn) : ret
                         ret = (close != null) ? ((ret != null) ? ret + close : close) : ret
@@ -259,22 +304,22 @@ TemplateLoader : class // class that takes care of loading the template's databa
                     else
                     {
                         begin := parseChunk(chunk substring(0,openLoop))
-                        close := parseChunk(chunk substring(closeLoop+2))
+                        close := parseChunk(chunk substring(closeLoop+1))
                         ret = (begin != null) ? begin : null
-                        ret = (close != null) ? ((ret != null) ? ret + close : close) : ret
+                        ret = ((close != null) ? ((ret != null) ? ret + close : close) : ret)
                         return ret
                     }
                 }
             }
         }
     
-        opens := chunk findAll("__{")
-        closes := chunk findAll("}__")
+        opens := chunk findAll("<%")
+        closes := chunk findAll("%>")
         if(opens size == closes size && opens != 0)
         {
             for(j in 0 .. opens size)
             {
-                data := chunk substring(opens get(j)+3,closes get(j))
+                data := chunk substring(opens get(j)+2,closes get(j))
                 result : String
                 inFuncName := true
                 inFuncArgs := false
@@ -296,7 +341,7 @@ TemplateLoader : class // class that takes care of loading the template's databa
                         funcArgs add(temp)
                         temp = ""
                     }
-                    else if((data[i] == '\n' || i == data size-1) && inFuncArgs)
+                    else if((data[i] == '\n' || i == data size-1 || data[i] == ';') && inFuncArgs)
                     {
                         temp = (i == data size - 1 && data[i] != '\n' && data[i] != '\r' && data[i] != ' ') ? temp+data[i] : temp
                         funcArgs add(temp)
@@ -394,6 +439,80 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                 }
                             }
                         }
+                        else if(funcName == "ColumnCount")
+                        {
+                            if(funcArgs size > 0)
+                            {
+                                if(db columns != null)
+                                {
+                                    countVars[funcArgs get(0)] = ("%d" format(db columns size))
+                                }
+                            }
+                        }
+                        else if(funcName == "DatabaseCount")
+                        {
+                            if(funcArgs size > 0)
+                            {
+                                databases := File new("databases")
+                                count := databases getChildren() size
+                                if(count > 0)
+                                {
+                                    countVars[funcArgs get(0)] = ("%d" format(count))
+                                }
+                            }
+                        }
+                        else if(funcName == "DatabaseNames")
+                        {
+                            if(funcArgs size > 0)
+                            {
+                                databases := File new("databases")
+                                tempArray := databases getChildrenNames()
+                                for(i in 0 .. tempArray size)
+                                {
+                                    tempArray[i] = tempArray get(i) substring(tempArray get(i) find("\\",0)+1, tempArray get(i) find(".",0))
+                                }
+                                tempContainer := StrListContainer new()
+                                tempContainer array = tempArray
+                                arrays[funcArgs get(0)] = tempContainer
+                            }
+                        }
+                        else if(funcName == "PrintDatabase")
+                        {
+                            if(funcArgs size > 0)
+                            {
+                                countS := resolveVariable(funcArgs get(0))
+                                if(countS != null && db != null)
+                                {
+                                    count := countS toInt()
+                                    if(count > 0)
+                                    {
+                                        result = (result == null) ? "<table border=\"1\">" : result +  "<table border=\"1\">"
+                                        result += "<tr>"
+                                        for(i in 0 .. db columns size)
+                                        {
+                                            result += "<th>"+(db columns get(i) name)+"</th>"
+                                        }
+                                        result += "</tr><tr>"
+                                        for(i in 0 .. count)
+                                        {
+                                            for(j in 0 .. db columns size)
+                                            {
+                                                if(db columns get(j) fields get(i) data != null)
+                                                {
+                                                    result += "<td>"+db columns get(j) fields get(i) data+"</td>"
+                                                }
+                                                else
+                                                {
+                                                    result += "<td><em>Empty field</em></td>"
+                                                }
+                                            }
+                                            result += "</tr>"
+                                        }
+                                        result += "</table>"
+                                    }
+                                }
+                            }
+                        }
                         else if(funcName == "Line")
                         {
                             if(funcArgs size > 2)
@@ -418,15 +537,62 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                 }
                             }
                         }
+                        else if(funcName == "DeleteLine")
+                        {
+                            if(funcArgs size > 0)
+                            {
+                                indexS := resolveVariable(funcArgs get(0))
+                                if(indexS != null)
+                                {
+                                    index := indexS toInt()
+                                    db deleteLine(index)
+                                    db save()
+                                }
+                            }
+                        }
+                        else if(funcName == "EditField") // this also CREATES fields -> TODO: FIX CREATING FIELD ALGORITHM ;o
+                        {
+                            if(funcArgs size > 2)
+                            {
+                                param1 := resolveVariable(funcArgs get(0))
+                                param2 := resolveVariable(funcArgs get(1))
+                                param3 := resolveVariable(funcArgs get(2))
+                                if(param1 != null && param2 != null && param3 != null)
+                                {
+                                    lineIndex := param1 toInt()
+                                    colIndex := param2 toInt()
+                                    if(db columns != null)
+                                    {
+                                        if(db columns size > colIndex && db columns get(colIndex) fields size > lineIndex)//field already exists
+                                        {
+                                            db columns get(colIndex) fields get(lineIndex) data = param3
+                                        }
+                                        else if(db columns size > colIndex && db columns get(colIndex) fields size <= lineIndex)//create field =D
+                                        {
+                                            for(i in db columns get(colIndex) fields size .. lineIndex+1)
+                                            {
+                                                for(j in 0 .. db columns size)// Need to loop through all columns too, elsewise database may bug at saving
+                                                {
+                                                    temp = (i == lineIndex && j == colIndex) ? param3 : ""
+                                                    db columns get(j) fields add(i,Field new(temp))
+                                                }
+                                            }
+                                        }
+                                    }
+                                    db save()
+                                }
+                            }
+                        }
                         funcName = ""
                         funcArgs clear()
                     }
-                    else if(data[i] != '\r' && data[i] != '\n' && data[i] != ' ' && data[i] != '\t')
+                    else if(data[i] != '\r' && data[i] != '\n' && data[i] != ' ' && data[i] != '\t' && data[i] != ';')
                     {
                         temp = (temp == null || temp == "") ? data[i] as String : temp + data[i] as String
                     }
                 }
-                ret = (result != null) ? ret replaceAll("__{"+data+"}__",result) : ret replaceAll("__{"+data+"}__","")
+                //TODO: CHANGE THIS TO A BETTER METHOD, NOT TO OVERRIDE SIMILAR PASSAGES :/ 
+                ret = (result != null) ? ret replaceAll("<%"+data+"%>",result) : ret replaceAll("<%"+data+"%>","")
             }
         }
         ret

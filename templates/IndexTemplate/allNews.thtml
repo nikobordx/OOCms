@@ -5,7 +5,7 @@ Column: Contents,contents
 Count: NewsCount
 %>
 
-{[ i: 0..5 ]
+{[ i: 0..NewsCount ]
     {[ Title(i) != NULL ]
     <div class="cadre">
         <div class="titre">
@@ -19,4 +19,3 @@ Count: NewsCount
     <br/><br/>
     }
 }
-<a href="oocms.cgi?page=index&subpage=allNews">Show all <%Show: NewsCount%> news!</a>
