@@ -2,7 +2,7 @@
 Database: news,DESCORDER[id]
 Column: Title,title
 Column: Contents,contents
-Count: NewsCount
+LineCount: NewsCount
 %>
 
 {[ i: 0..NewsCount ]

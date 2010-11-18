@@ -21,7 +21,7 @@
                 <h1>Listing database <%Show: _GET(database)%></h1><br/>
                 <%
                     Database: _GET(database)
-                    Count: lineCount
+                    LineCount: lineCount
                     PrintDatabase: lineCount
                 %>
                 <br/><br/>
@@ -77,7 +77,7 @@
                             <p>Line edited with success. <a href="oocms.cgi?page=admin&name=<% Show: _GET(name) %>&password=<% Show: _GET(password) %> ">Return to administration index.</a></p>
                         }
                         {[ _POST(lineIndex) == NULL]
-                            <% Count: lineIndex %>
+                            <% LineCount: lineIndex %>
                             {[ i: 0 .. _POST(fields) ]
                                 <%
                                     EditField: lineIndex,i,_POST(data{i})

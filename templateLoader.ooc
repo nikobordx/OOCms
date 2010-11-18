@@ -7,6 +7,16 @@ import io/File
 import structs/ArrayList
 import addressParser
 
+Function : class
+{
+    name : String
+    callback : Func(ArrayList<String>,TemplateLoader) -> String
+    
+    init : func (=name,=callback)
+    {
+    }
+}
+
 StrListContainer : class
 {
     array := ArrayList<String> new()
@@ -28,8 +38,269 @@ TemplateLoader : class // class that takes care of loading the template's databa
     countVars := MultiMap<String,String> new()
     maps := MultiMap<String,StrStrMapContainer> new()
     
+    functions := ArrayList<Function> new()
+    
     init : func()
     {
+        // Create our functions :) (Note the kewl new way to do that :D)
+        functions add(Function new("Show",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            returned := (args size > 0) ? tl resolveVariable(args get(0)) : null
+                            returned
+                }))
+        
+        functions add(Function new("ArrayPrint",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            ret := ""
+                            if(args size > 0)// we have our argument :)
+                            {
+                                if(tl arrays != null && tl arrays get(args get(0)) array != null)//if there is an array with that name
+                                {
+                                    //print awaaay!!!
+                                    array := tl arrays get(args get(0)) array
+                                    
+                                    for(i in 0 .. array size)
+                                    {
+                                        ret += array get(i) + "<br/>"
+                                    }
+                                }
+                            }
+                            ret
+                }))
+        
+        functions add(Function new("Database",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size > 0)
+                            {
+                                rsv1 := tl resolveVariable(args get(0))
+                                if(rsv1 != null)
+                                {
+                                    tl db = Database new("databases/"+rsv1+".csv")
+                                    if(args size > 1)
+                                    {
+                                        if(args get(1) startsWith?("DESCORDER"))
+                                        {
+                                            temp := args get(1) substring(10,args get(1) size-1) // and here we have our column name ;D
+                                            rsv2 := tl resolveVariable(temp)
+                                            if(rsv2 != null)
+                                            {
+                                                tl db sortDescending(rsv2)
+                                            }
+                                        }
+                                        else if(args get(1) startsWith?("ASCORDER"))
+                                        {
+                                            temp := args get(1) substring(9,args get(1) size-1)
+                                            rsv2 := tl resolveVariable(temp)
+                                            if(rsv2 != null)
+                                            {
+                                                tl db sortAscending(rsv2)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            ""
+                }))
+        
+        functions add(Function new("Column",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size > 1)
+                            {
+                                if(tl db selectColumn(args get(1)) != null)
+                                {
+                                    tempArray := ArrayList<String> new()
+                                    rsv := tl resolveVariable(args get(1))
+                                    if(rsv != null)
+                                    {
+                                        col := tl db selectColumn(rsv)
+                                        for(j in 0 .. col fields size)
+                                        {
+                                            tempArray add(col fields get(j) data)
+                                        }
+                                        tempContainer := StrListContainer new()
+                                        tempContainer array = tempArray
+                                        tl arrays[args get(0)] = tempContainer
+                                    }
+                                }
+                            }
+                            ""
+                }))
+        
+        functions add(Function new("LineCount",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size > 0)
+                            {
+                                if(tl db columns != null)
+                                {
+                                    tl countVars[args get(0)] = ("%d" format(tl db columns get(0) fields size))
+                                }
+                            }
+                            ""
+                }))
+        
+        functions add(Function new("ColumnCount",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size > 0)
+                            {
+                                if(tl db columns != null)
+                                {
+                                    tl countVars[args get(0)] = ("%d" format(tl db columns size))
+                                }
+                            }
+                            ""
+                }))
+        
+        functions add(Function new("DatabaseCount",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size > 0)
+                            {
+                                databases := File new("databases")
+                                count := databases getChildren() size
+                                if(count > 0)
+                                {
+                                    tl countVars[args get(0)] = ("%d" format(count))
+                                }
+                            }
+                            ""
+                }))
+        
+        functions add(Function new("DatabaseNames",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size > 0)
+                            {
+                                databases := File new("databases")
+                                tempArray := databases getChildrenNames()
+                                for(i in 0 .. tempArray size)
+                                {
+                                    tempArray[i] = tempArray get(i) substring(tempArray get(i) find("\\",0)+1, tempArray get(i) find(".",0))
+                                }
+                                tempContainer := StrListContainer new()
+                                tempContainer array = tempArray
+                                tl arrays[args get(0)] = tempContainer
+                            }
+                            ""
+                }))
+        
+        functions add(Function new("ColumnNames",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size > 0)
+                            {
+                                if(tl db columns != null)
+                                {
+                                    tempArray := ArrayList<String> new()
+                                    for(i in 0 .. tl db columns size)
+                                    {
+                                        tempArray[i] = tl db columns get(i) name
+                                    }
+                                    tempContainer := StrListContainer new()
+                                    tempContainer array = tempArray
+                                    tl arrays[args get(0)] = tempContainer
+                                }
+                            }
+                            ""
+                }))
+        
+        functions add(Function new("PrintDatabase",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            ret := ""
+                            if(args size > 0)
+                            {
+                                countS := tl resolveVariable(args get(0))
+                                if(countS != null && db != null)
+                                {
+                                    count := countS toInt()
+                                    if(count > 0)
+                                    {
+                                        ret += "<table border=\"1\"><tr>"
+                                        for(i in 0 .. tl db columns size)
+                                        {
+                                            ret += "<th>"+(tl db columns get(i) name)+"</th>"
+                                        }
+                                        ret += "</tr><tr>"
+                                        for(i in 0 .. count)
+                                        {
+                                            for(j in 0 .. tl db columns size)
+                                            {
+                                                if(tl db columns get(j) fields get(i) data != null)
+                                                {
+                                                    ret += "<td>"+tl db columns get(j) fields get(i) data+"</td>"
+                                                }
+                                                else
+                                                {
+                                                    ret += "<td><em>Empty field</em></td>"
+                                                }
+                                            }
+                                            ret += "</tr>"
+                                        }
+                                        ret += "</table>"
+                                    }
+                                }
+                            }
+                            ret
+                }))
+        
+        functions add(Function new("Line",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size > 2)
+                            {
+                                rsv1 := tl resolveVariable(args get(0))
+                                rsv2 := tl resolveVariable(args get(1))
+                                if(rsv1 != null && rsv2 != null)
+                                {
+                                    fields := tl db selectLine(rsv1,rsv2)
+                                    if(fields != null && fields size > 0)
+                                    {
+                                        if(fields size == tl db columns size)
+                                        {
+                                            tempMap := StrStrMapContainer new()
+                                            for(i in 0 .. fields size)
+                                            {
+                                                tempMap map[tl db columns get(i) name] = fields get(i) data
+                                            }
+                                            tl maps[args get(2)] = tempMap
+                                        }
+                                    }
+                                }
+                            }
+                            ""
+                }))
+        
+        functions add(Function new("DeleteLine",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size > 0)
+                            {
+                                indexS := tl resolveVariable(args get(0))
+                                if(indexS != null)
+                                {
+                                    index := indexS toInt()
+                                    tl db deleteLine(index)
+                                    tl db save()
+                                }
+                            }
+                            ""
+                }))
+        
+        functions add(Function new("EditField",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size > 2)
+                            {
+                                param1 := tl resolveVariable(args get(0))
+                                param2 := tl resolveVariable(args get(1))
+                                param3 := tl resolveVariable(args get(2))
+                                if(param1 != null && param2 != null && param3 != null)
+                                {
+                                    lineIndex := param1 toInt()
+                                    colIndex := param2 toInt()
+                                    if(tl db columns != null)
+                                    {
+                                        if(tl db columns size > colIndex && tl db columns get(colIndex) fields size > lineIndex)//field already exists
+                                        {
+                                            tl db columns get(colIndex) fields get(lineIndex) data = param3
+                                        }
+                                        else if(tl db columns size > colIndex && tl db columns get(colIndex) fields size <= lineIndex)//create field =D
+                                        {
+                                            for(i in tl db columns get(colIndex) fields size .. lineIndex+1)
+                                            {
+                                                for(j in 0 .. tl db columns size)// Need to loop through all columns too, elsewise database may bug at saving
+                                                {
+                                                    temp := (i == lineIndex && j == colIndex) ? param3 : ""
+                                                    tl db columns get(j) fields add(i,Field new(temp))
+                                                }
+                                            }
+                                        }
+                                    }
+                                    tl db save()
+                                }
+                            }
+                            ""
+                }))
     }
     
     loadConfig : func() -> StrStrMapContainer
@@ -201,7 +472,7 @@ TemplateLoader : class // class that takes care of loading the template's databa
     
         return var // else just send back the string that was passed to be resolved (String type :p)
     }
-    
+    // TODO: Maybe->add if and for keywords (instead of {[ i : 0 .. 5 ] ... } for[ i : 0 .. 5]{ ... }, instead of {[ _GET(thing) == _CONFIG(thing) ] ... } if[ _ GET(thing) == _CONFIG(thing) ] { ... }
     parseChunk : func (chunk : String) -> String
     {
         ret := chunk
@@ -348,239 +619,17 @@ TemplateLoader : class // class that takes care of loading the template's databa
                         temp = ""
                         inFuncArgs = false
                         inFuncName = true
-                        if(funcName == "Show")// Show function
+            
+                        for(k in 0 .. functions size)
                         {
-                            if(funcArgs size > 0)// If we have our argument ;)
+                            if(functions get(k) name == funcName)
                             {
-                                returned := resolveVariable(funcArgs get(0))
+                                returned := functions get(k) callback(funcArgs,this)// execute function
                                 if(returned != null)
                                 {
-                                    result = (result == null) ? returned : result+returned // add variable value to return string
+                                    result = (result == null) ? returned : result+returned // add callback return to return string
                                 }
-                            }
-                        }
-                        else if(funcName == "ArrayPrint")// arrayPrint function
-                        {
-                            if(funcArgs size > 0)// we have our argument :)
-                            {
-                                if(arrays != null && arrays get(funcArgs get(0)) array != null)//if there is an array with that name
-                                {
-                                    //print awaaay!!!
-                                    array := arrays get(funcArgs get(0)) array
-                                    for(i in 0 .. array size)
-                                    {
-                                        result = (result == null) ? array get(i) + "<br/>" : result + array get(i) + "<br/>"
-                                    }
-                                }
-                            }
-                        }
-                        else if(funcName == "Database")
-                        {
-                            if(funcArgs size > 0)
-                            {
-                                rsv1 := resolveVariable(funcArgs get(0))
-                                if(rsv1 != null)
-                                {
-                                    db = Database new("databases/"+rsv1+".csv")
-                                    if(funcArgs size > 1)
-                                    {
-                                        if(funcArgs get(1) startsWith?("DESCORDER"))
-                                        {
-                                            temp = funcArgs get(1) substring(10,funcArgs get(1) size-1) // and here we have our column name ;D
-                                            rsv2 := resolveVariable(temp)
-                                            if(rsv2 != null)
-                                            {
-                                                db sortDescending(rsv2)
-                                            }
-                                        }
-                                        else if(funcArgs get(1) startsWith?("ASCORDER"))
-                                        {
-                                            temp = funcArgs get(1) substring(9,funcArgs get(1) size-1)
-                                            rsv2 := resolveVariable(temp)
-                                            if(rsv2 != null)
-                                            {
-                                                db sortAscending(rsv2)
-                                            }
-                                        }
-                                    }
-                                }
-                                temp = ""
-                            }
-                        }
-                        else if(funcName == "Column")
-                        {
-                            if(funcArgs size > 1)
-                            {
-                                if(db selectColumn(funcArgs get(1)) != null)
-                                {
-                                    tempArray := ArrayList<String> new()
-                                    rsv := resolveVariable(funcArgs get(1))
-                                    if(rsv != null)
-                                    {
-                                        col := db selectColumn(rsv)
-                                        for(j in 0 .. col fields size)
-                                        {
-                                            tempArray add(col fields get(j) data)
-                                        }
-                                        tempContainer := StrListContainer new()
-                                        tempContainer array = tempArray
-                                        arrays[funcArgs get(0)] = tempContainer
-                                    }
-                                }
-                            }
-                        }
-                        else if(funcName == "Count")
-                        {
-                            if(funcArgs size > 0)
-                            {
-                                if(db columns != null)
-                                {
-                                    countVars[funcArgs get(0)] = ("%d" format(db columns get(0) fields size))
-                                }
-                            }
-                        }
-                        else if(funcName == "ColumnCount")
-                        {
-                            if(funcArgs size > 0)
-                            {
-                                if(db columns != null)
-                                {
-                                    countVars[funcArgs get(0)] = ("%d" format(db columns size))
-                                }
-                            }
-                        }
-                        else if(funcName == "DatabaseCount")
-                        {
-                            if(funcArgs size > 0)
-                            {
-                                databases := File new("databases")
-                                count := databases getChildren() size
-                                if(count > 0)
-                                {
-                                    countVars[funcArgs get(0)] = ("%d" format(count))
-                                }
-                            }
-                        }
-                        else if(funcName == "DatabaseNames")
-                        {
-                            if(funcArgs size > 0)
-                            {
-                                databases := File new("databases")
-                                tempArray := databases getChildrenNames()
-                                for(i in 0 .. tempArray size)
-                                {
-                                    tempArray[i] = tempArray get(i) substring(tempArray get(i) find("\\",0)+1, tempArray get(i) find(".",0))
-                                }
-                                tempContainer := StrListContainer new()
-                                tempContainer array = tempArray
-                                arrays[funcArgs get(0)] = tempContainer
-                            }
-                        }
-                        else if(funcName == "PrintDatabase")
-                        {
-                            if(funcArgs size > 0)
-                            {
-                                countS := resolveVariable(funcArgs get(0))
-                                if(countS != null && db != null)
-                                {
-                                    count := countS toInt()
-                                    if(count > 0)
-                                    {
-                                        result = (result == null) ? "<table border=\"1\">" : result +  "<table border=\"1\">"
-                                        result += "<tr>"
-                                        for(i in 0 .. db columns size)
-                                        {
-                                            result += "<th>"+(db columns get(i) name)+"</th>"
-                                        }
-                                        result += "</tr><tr>"
-                                        for(i in 0 .. count)
-                                        {
-                                            for(j in 0 .. db columns size)
-                                            {
-                                                if(db columns get(j) fields get(i) data != null)
-                                                {
-                                                    result += "<td>"+db columns get(j) fields get(i) data+"</td>"
-                                                }
-                                                else
-                                                {
-                                                    result += "<td><em>Empty field</em></td>"
-                                                }
-                                            }
-                                            result += "</tr>"
-                                        }
-                                        result += "</table>"
-                                    }
-                                }
-                            }
-                        }
-                        else if(funcName == "Line")
-                        {
-                            if(funcArgs size > 2)
-                            {
-                                rsv1 := resolveVariable(funcArgs get(0))
-                                rsv2 := resolveVariable(funcArgs get(1))
-                                if(rsv1 != null && rsv2 != null)
-                                {
-                                    fields := db selectLine(rsv1,rsv2)
-                                    if(fields != null && fields size > 0)
-                                    {
-                                        if(fields size == db columns size)
-                                        {
-                                            tempMap := StrStrMapContainer new()
-                                            for(i in 0 .. fields size)
-                                            {
-                                                tempMap map[db columns get(i) name] = fields get(i) data
-                                            }
-                                            maps[funcArgs get(2)] = tempMap
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else if(funcName == "DeleteLine")
-                        {
-                            if(funcArgs size > 0)
-                            {
-                                indexS := resolveVariable(funcArgs get(0))
-                                if(indexS != null)
-                                {
-                                    index := indexS toInt()
-                                    db deleteLine(index)
-                                    db save()
-                                }
-                            }
-                        }
-                        else if(funcName == "EditField") // this also CREATES fields -> TODO: FIX CREATING FIELD ALGORITHM ;o
-                        {
-                            if(funcArgs size > 2)
-                            {
-                                param1 := resolveVariable(funcArgs get(0))
-                                param2 := resolveVariable(funcArgs get(1))
-                                param3 := resolveVariable(funcArgs get(2))
-                                if(param1 != null && param2 != null && param3 != null)
-                                {
-                                    lineIndex := param1 toInt()
-                                    colIndex := param2 toInt()
-                                    if(db columns != null)
-                                    {
-                                        if(db columns size > colIndex && db columns get(colIndex) fields size > lineIndex)//field already exists
-                                        {
-                                            db columns get(colIndex) fields get(lineIndex) data = param3
-                                        }
-                                        else if(db columns size > colIndex && db columns get(colIndex) fields size <= lineIndex)//create field =D
-                                        {
-                                            for(i in db columns get(colIndex) fields size .. lineIndex+1)
-                                            {
-                                                for(j in 0 .. db columns size)// Need to loop through all columns too, elsewise database may bug at saving
-                                                {
-                                                    temp = (i == lineIndex && j == colIndex) ? param3 : ""
-                                                    db columns get(j) fields add(i,Field new(temp))
-                                                }
-                                            }
-                                        }
-                                    }
-                                    db save()
-                                }
+                                break
                             }
                         }
                         funcName = ""

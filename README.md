@@ -45,7 +45,7 @@ Specifies a variable of type Array named varName, wich contains the values of th
 Specifies a variable of type Map named varName, wich contains the values of the line of the databases who matches the criteria: Column[colName] = value
 
     
-    Count: varName
+    LineCount: varName
 Specifies a variable of type Int named varName, wich contains the number of lines found in the database
 
 That are the database handling functions. Soon (hopefully), DeleteLine and EditField will be added.
@@ -108,3 +108,5 @@ Note: You should use password protection on templates and design subfolders but 
 is host/server specific, so nothing is included within a standard oocms distribution.
 
 Note: from version 0.5, there are no longer .db files.
+
+Note: there are more functions available, just look into sources, i will write a complete doc once a stable version is reached :)
