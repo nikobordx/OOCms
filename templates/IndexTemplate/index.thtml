@@ -1,22 +1,25 @@
 <%
-Database: news,DESCORDER[id]
-Column: Title,title
-Column: Contents,contents
+Database: "news"
+DescOrder: "id"
+Column: Title,"title"
+Column: Contents,"contents"
 LineCount: NewsCount
-%>
 
-{[ i: 0..5 ]
-    {[ Title(i) != NULL ]
+for[i:0..5]{
+    if[Title(i) != NULL]{
+%>
     <div class="cadre">
         <div class="titre">
-            <%Show: Title(i)%>
+            <%Show: Title(i);%>
         </div>
         <div class="marge_interne">
             <br/>
-            <%Show: Contents(i)%>
+            <%Show: Contents(i);%>
         </div>
     </div>
     <br/><br/>
+<%
     }
 }
-<a href="oocms.cgi?page=index&subpage=allNews">Show all <%Show: NewsCount%> news!</a>
+%>
+<a href="oocms.cgi?page=index&subpage=allNews">Show all <%Show: NewsCount;%> news!</a>
