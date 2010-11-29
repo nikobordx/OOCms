@@ -367,8 +367,6 @@ TemplateLoader : class // class that takes care of loading the template's databa
     
     load : func(ap : AddressParser)
     {
-        file := "templates/"+ap template+"/"+((ap getParams get("subpage") == null) ? "index.thtml" : ap getParams get("subpage")+".thtml") // path of template html file to parse
-    
         tempGetMap := StrStrMapContainer new()
         for(i in 0 .. ap getParams size)
         {
@@ -385,7 +383,28 @@ TemplateLoader : class // class that takes care of loading the template's databa
         thtmlMaps["_CONFIG"] = loadConfig()
     
         getDesign()
-        parseFile(file)// parse thtml file =D
+    
+        replaceOpens := base findAll("__[")
+        replaceCloses := base findAll("]__")
+        if(replaceOpens size == replaceCloses size)
+        {
+            contents = base
+            for(i in 0 .. replaceOpens size)
+            {
+                file := base substring(replaceOpens get(i)+3,replaceCloses get(i))
+                ofile := ""
+                if(file == "" || file == null)
+                {
+                    ofile = "templates/"+ap template+"/"+((ap getParams get("subpage") == null) ? "index.thtml" : ap getParams get("subpage")+".thtml")
+                }
+                else
+                {
+                    ofile = "design/"+file+".thtml"
+                }
+                data := parseFile(ofile)
+                contents = contents replaceAll("__["+file+"]__",data)
+            }
+        }
         
     }
     getDesign : func ()
@@ -401,21 +420,22 @@ TemplateLoader : class // class that takes care of loading the template's databa
             status = "404"
         }
     }
-    parseFile : func (file : String)
+    parseFile : func (file : String) -> String
     {
         freader := File new(file)
         if(freader exists?())
         {
             data := freader read()
             tokens := Tokenizer parse(data)
-        
-            newData := Tokenizer execute(tokens,this)
-            contents = base replaceAll("__[]__",newData)
+            
+            return Tokenizer execute(tokens,this)
         }
         else
         {
             status = "404"
+            return "The page you aked for does not exist. (Error 404)"
         }
+        ""
     }
     
     resolveVariable : func (var : String) -> String // code that takes the name of a variable and returns its value
@@ -450,7 +470,6 @@ TemplateLoader : class // class that takes care of loading the template's databa
             // ok, now we have a number in there :p
             if(nIndex != null && thtmlArrays get(varn) != null)
             {
-                varn println()
                 if((thtmlArrays get(varn) array size > nIndex toInt()))
                 {
                     if(thtmlArrays get(varn) array get(nIndex toInt()) != null) // if we do have an array named like that and a field at that index

@@ -19,6 +19,7 @@ Tokenizer : class
         tokens := ArrayList<Token> new()
         opens := str findAll("<%")
         closes := str findAll("%>")
+        
         if(opens size == closes size && opens size > 0)
         {
             tokens add(Token new(str substring(0,opens get(0)),"HTML")) // first html token
@@ -103,6 +104,10 @@ Tokenizer : class
                 }
             }
             tokens add(Token new(str substring(closes last()+2),"HTML")) // last html token :p
+        }
+        else
+        {
+            tokens add(Token new(str,"HTML"))
         }
         tokens
     }
