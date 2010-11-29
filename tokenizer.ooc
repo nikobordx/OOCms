@@ -1,4 +1,5 @@
 import structs/ArrayList
+import io/File
 import text/StringTokenizer
 import templateLoader
 
@@ -60,6 +61,11 @@ Tokenizer : class
                         if(indx != -1)
                         {
                             tokens get(indx) type = "function"
+                            indx2 := getRightToken(tokens,i)
+                            if(indx2 != -1)
+                            {
+                                tokens get(indx2) type = (tokens get(indx2) type == null ) ? "argument" : tokens get(indx2) type
+                            }
                         }
                     }
                     else if(tokens get(i) value == "[")
@@ -83,7 +89,7 @@ Tokenizer : class
                             tokens get(i) type = "string"
                         }
                     }
-                    else if(tokens get(i) value == ";" || tokens get(i) value == "\n" || tokens get(i) value == "\r")
+                    else if(tokens get(i) value == ";")
                     {
                         if(tokens get(getLeftToken(tokens,i)) type == null)
                         {
@@ -165,7 +171,7 @@ Tokenizer : class
         while(currentIndex > 0)
         {
             currentIndex -= 1
-            if(tokens get(currentIndex) value != " " && tokens get(currentIndex) value != "\n" && tokens get(currentIndex) value != "\r")
+            if(tokens get(currentIndex) value != " " && tokens get(currentIndex) value != "\n" && tokens get(currentIndex) value != "\r" && tokens get(currentIndex) value != "")
             {
                 return currentIndex
             }
@@ -177,7 +183,7 @@ Tokenizer : class
     {
         for(i in currentIndex+1 .. tokens size)
         {
-            if(tokens get(i) value != " " && tokens get(i) value != "\n" && tokens get(i) value != "\r")
+            if(tokens get(i) value != " " && tokens get(i) value != "\n" && tokens get(i) value != "\r" && tokens get(i) value != "")
             {
                 return i
             }
@@ -262,12 +268,12 @@ Tokenizer : class
                     }
                     else
                     {
-                        return "Error: expected ':' after a function token"
+                        return "Error: expected ':' after a function token ( found " + tokens get(indx) value + " )"
                     }
                 }
                 else
                 {
-                    return "Error: expected ':' after a function token"
+                    return "Error: expected ':' after a function token ( function followed by nothing? oO Have you been changing .tokens files lately? xD )"
                 }
             }
             else if(tokens get(i) value == "if") // verify this with nested blocks, i think there are some problems, maybe related to split
@@ -368,6 +374,45 @@ Tokenizer : class
             }
         }
         -1
+    }
+    
+    saveToFile : static func (tokens : ArrayList<Token>, fileName : String)
+    {
+        fsave := File new(fileName)
+        toWrite := ""
+        
+        for(token in tokens)
+        {
+            toWrite += "¤"+token value+((token type != null) ? "ͳ"+token type : "")+"¤"
+        }
+        
+        fsave write(toWrite)
+    }
+    
+    readFromFile : static func (fileName : String) -> ArrayList<Token>
+    {
+        tokens := ArrayList<Token> new()
+        
+        file := File new(fileName)
+        if(file file?())
+        {
+            data := file read()
+            parts := data split("¤")
+            for(part in parts)
+            {
+                if(part findAll("ͳ") size > 0)
+                {
+                    value := part substring(0,part find("ͳ",0))
+                    type := part substring(part find("ͳ",0)+2)
+                    tokens add(Token new(value,type))
+                }
+                else
+                {
+                    tokens add(Token new(part))
+                }
+            }
+        }
+        tokens
     }
 }
 

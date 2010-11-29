@@ -425,8 +425,17 @@ TemplateLoader : class // class that takes care of loading the template's databa
         freader := File new(file)
         if(freader exists?())
         {
-            data := freader read()
-            tokens := Tokenizer parse(data)
+            tokens := ArrayList<Token> new()
+            if(File new(file+".tokens") file?())
+            {
+                tokens = Tokenizer readFromFile(file+".tokens")
+            }
+            else
+            {
+                data := freader read()
+                tokens = Tokenizer parse(data)
+                Tokenizer saveToFile(tokens,file+".tokens")
+            }
             
             return Tokenizer execute(tokens,this)
         }
