@@ -302,12 +302,12 @@ Tokenizer : class
                     }
                     else
                     {
-                        return "Error: expected a block after if keyword. (Did you forget '{' ?)"
+                        return "Error: expected a block after if keyword. Found " + tokens get(openIndx) value + " in the place of '{'"
                     }
                 }
                 else
                 {
-                    return "Error: expected a condition after if keyword. (Did you forget '[' or ']' ?)"
+                    return "Error: expected a condition after if keyword. (Did you forget '[' or ']' ?) , ( Found " + tokens get(cond) value + " at the place of a condition )"
                 }
             }
             else if(tokens get(i) value == "for")
@@ -332,12 +332,12 @@ Tokenizer : class
                     }
                     else
                     {
-                        return "Error: expected a block after for keyword. (Did you forget '{' ?)"
+                        return "Error: expected a block after for keyword. Found " + tokens get(openIndx) value + " in the place of '{'"
                     }
                 }
                 else
                 {
-                    return "Error: expected a loop after for keyword. (Did you forget '[' or ']' ?)"
+                    return "Error: expected a loop after for keyword. (Did you forget '[' or ']' ?) , ( Found " + tokens get(loop) value + " at the place of a loop )"
                 }
             }
         }
