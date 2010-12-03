@@ -81,6 +81,142 @@ TemplateLoader : class // class that takes care of loading the template's databa
                             ret
                 }))
         
+        thtmlFunctions add(Function new("MapPrint",func(args : ArrayList<String>, tl : TemplateLoader) {
+                        ret := ""
+                        if(args size > 0)
+                        {
+                            rsv := tl resolveVariable(args get(0))
+                            if(tl thtmlMaps get(rsv) map != null)
+                            {
+                                for(i in 0 .. tl thtmlMaps get(rsv) map size)
+                                {
+                                    key := tl thtmlMaps get(rsv) map getKeys() get(i)
+                                    ret += key + " => " + tl thtmlMaps get(rsv) map get(key) + "<br/>"
+                                }
+                            }
+                        }
+                        ret
+                }))
+        
+        thtmlFunctions add(Function new("Execute",func(args : ArrayList<String>, tl : TemplateLoader) { // Executes thtml code passed as argument
+                        // Can be pretty cool coupled with ReadFile, they can then act as includes
+                        ret := ""
+                        if(args size > 0)
+                        {
+                            code := tl resolveVariable(args get(0))
+                            tokens := Tokenizer parse(code)
+                            ret = Tokenizer execute(tokens,tl)
+                        }
+                        ret
+                }))
+        
+        thtmlFunctions add(Function new("ReadFile",func(args : ArrayList<String>, tl : TemplateLoader) { // Reads data from file and stocks it to a variable
+                        ret := ""
+                        if(args size > 1)
+                        {
+                            rsv := tl resolveVariable(args get(1))
+                            file := File new(rsv)
+                            if(file file?())
+                            {
+                                tl thtmlVars[args get(0)] = file read()
+                            }
+                            else
+                            {
+                                ret = "Error: Could not locate file " + rsv
+                            }
+                        }
+                        ret
+                        
+                }))
+        
+        thtmlFunctions add(Function new("Replace",func(args : ArrayList<String>, tl : TemplateLoader) {
+                        if(args size > 3) // Arg 1 : name of new variable, arg 2 : name of previous variable, arg 3 : what? , arg 4 : with
+                        {
+                            rsv1 := tl resolveVariable(args get(1))
+                            rsv2 := tl resolveVariable(args get(2))
+                            rsv3 := tl resolveVariable(args get(3))
+                            
+                            tl thtmlVars[args get(0)] = rsv1 replaceAll(rsv2,rsv3) // Replace all occurences of "what?" with "with" in "var"
+                        }
+                        ""
+                }))
+        
+        thtmlFunctions add(Function new("Set",func(args : ArrayList<String>, tl : TemplateLoader) { // Sets a variable to a certain value
+                        if(args size > 1)
+                        {
+                            rsv := tl resolveVariable(args get(1))
+                            tl thtmlVars[args get(0)] = rsv
+                        }
+                        ""
+                }))
+        
+        thtmlFunctions add(Function new("SetArray",func(args : ArrayList<String>, tl : TemplateLoader) { // Set an array variable to a ceratin value
+                        if(args size > 2)
+                        {
+                            index := tl resolveVariable(args get(0)) toInt()
+                            name := tl resolveVariable(args get(1))
+                            value := tl resolveVariable(args get(2))
+                            
+                            if(tl thtmlArrays get(name) != null)
+                            {
+                                if(index >= tl thtmlArrays get(name) array size)
+                                {
+                                    for(i in tl thtmlArrays get(name) array size .. index + 1)
+                                    {
+                                        tl thtmlArrays get(name) array add(i,null)
+                                    }
+                                }
+                
+                                tl thtmlArrays get(name) array add(index,value)
+                            }
+                            else
+                            {
+                                tl thtmlArrays[name] = StrListContainer new()
+                                if(index >= tl thtmlArrays get(name) array size)
+                                {
+                                    for(i in tl thtmlArrays get(name) array size .. index + 1)
+                                    {
+                                        tl thtmlArrays get(name) array add(i,null)
+                                    }
+                                }
+                
+                                tl thtmlArrays get(name) array add(index,value)
+                            }
+                        }
+                        ""
+                }))
+        
+        thtmlFunctions add(Function new("SetMap",func(args : ArrayList<String>, tl : TemplateLoader) { // Set a map variable to a certain value
+                        if(args size > 2)
+                        {
+                            index := tl resolveVariable(args get(0))
+                            name := tl resolveVariable(args get(1))
+                            value := tl resolveVariable(args get(2))
+                            
+                            if(tl thtmlMaps get(name) != null)
+                            {
+                                tl thtmlMaps get(name) map[index] = value
+                            }
+                            else
+                            {
+                                tl thtmlMaps[name] = StrStrMapContainer new()
+                                tl thtmlMaps get(name) map[index] = value
+                            }
+                        }
+                        ""
+                }))
+        
+        thtmlFunctions add(Function new("EscapeHtml",func(args : ArrayList<String>, tl : TemplateLoader) { // Sets a variable with escaped html output of another variable
+                        if(args size > 1)
+                        {
+                            rsv := tl resolveVariable(args get(1))
+                            rsv = rsv replaceAll("<","&lt;")
+                            rsv = rsv replaceAll(">","&gt;")
+                            tl thtmlVars[args get(0)] = rsv
+                        }
+                        ""
+                }))
+        
         thtmlFunctions add(Function new("DescOrder",func(args : ArrayList<String>, tl : TemplateLoader) {
                             if(args size > 0)
                             {
@@ -382,6 +518,8 @@ TemplateLoader : class // class that takes care of loading the template's databa
     
         thtmlMaps["_CONFIG"] = loadConfig()
     
+        //thtmlMaps["_SESSION"] = loadSession()
+    
         getDesign()
     
         replaceOpens := base findAll("__[")
@@ -448,63 +586,66 @@ TemplateLoader : class // class that takes care of loading the template's databa
     }
     
     resolveVariable : func (var : String) -> String // code that takes the name of a variable and returns its value
-    {        
-        if(var[0] == '"' && var[var size-1] == '"') // Hey! this is a string! :)
+    {
+        if(var size > 0)
         {
-            return var substring(1,var size-1) // Return the contents of the string =)
-        }
-        else if((var toInt() != 0) || (var toInt() == 0 && var == "0")) // Hey! a number!!!
-        {
-            return var
-        }
-    
-        for(i in 0 .. thtmlVars size)// search for it in our count variables
-        {
-            key := thtmlVars getKeys() get(i)
-            if(key == var)// hey ! here it is!
+            if(var[0] == '"' && var[var size-1] == '"') // Hey! this is a string! :)
             {
-                return thtmlVars get(key)
+                return var substring(1,var size-1) // Return the contents of the string =)
             }
-        }
-        
-        // we didnt find it in count vars! :O
-        //No problemo, just search in thtmlArrays :)
-        index := var substring(var find("(",0)+1,var find(")",0))// get index of array
-        varn := var substring(0,var find("(",0))// and name of array ;)
-        
-        if(index != varn)
-        {
-            nIndex := resolveVariable(index)
-            
-            // ok, now we have a number in there :p
-            if(nIndex != null && thtmlArrays get(varn) != null)
+            else if((var toInt() != 0) || (var toInt() == 0 && var == "0")) // Hey! a number!!!
             {
-                if((thtmlArrays get(varn) array size > nIndex toInt()))
+                return var
+            }
+    
+            for(i in 0 .. thtmlVars size)// search for it in our count variables
+            {
+                key := thtmlVars getKeys() get(i)
+                if(key == var)// hey ! here it is!
                 {
-                    if(thtmlArrays get(varn) array get(nIndex toInt()) != null) // if we do have an array named like that and a field at that index
+                    return thtmlVars get(key)
+                }
+            }
+            
+            // we didnt find it in count vars! :O
+            //No problemo, just search in thtmlArrays :)
+            index := var substring(var find("(",0)+1,var find(")",0))// get index of array
+            varn := var substring(0,var find("(",0))// and name of array ;)
+            
+            if(index != varn)
+            {
+                nIndex := resolveVariable(index)
+                
+                // ok, now we have a number in there :p
+                if(nIndex != null && thtmlArrays get(varn) != null)
+                {
+                    if((thtmlArrays get(varn) array size > nIndex toInt()))
                     {
-                        return thtmlArrays get(varn) array get(nIndex toInt())// send back value
+                        if(thtmlArrays get(varn) array get(nIndex toInt()) != null) // if we do have an array named like that and a field at that index
+                        {
+                            return thtmlArrays get(varn) array get(nIndex toInt())// send back value
+                        }
+                    }
+                    else if(nIndex toInt() >= thtmlArrays get(varn) array size) // this array exists, however we are overloading its buffer!
+                    {
+                        return null// return null ;)
                     }
                 }
-                else if(nIndex toInt() >= thtmlArrays get(varn) array size) // this array exists, however we are overloading its buffer!
+                
+                if(thtmlMaps != null && thtmlMaps get(varn) != null)
                 {
-                    return null// return null ;)
-                }
-            }
-            
-            if(thtmlMaps != null && thtmlMaps get(varn) != null)
-            {
-                if(thtmlMaps get(varn) map get(index) != null)// search into thtmlMaps
-                {
-                    return thtmlMaps get(varn) map get(index)
-                }
-                else if(thtmlMaps get(varn) map get(resolveVariable(index)) != null)// search into thtmlMaps
-                {
-                    return thtmlMaps get(varn) map get(resolveVariable(index))
-                }
-                else// ow..there is a map, but no such element
-                {
-                    return null // ~NULL FTW~
+                    if(thtmlMaps get(varn) map get(index) != null)// search into thtmlMaps
+                    {
+                        return thtmlMaps get(varn) map get(index)
+                    }
+                    else if(thtmlMaps get(varn) map get(resolveVariable(index)) != null)// search into thtmlMaps
+                    {
+                        return thtmlMaps get(varn) map get(resolveVariable(index))
+                    }
+                    else// ow..there is a map, but no such element
+                    {
+                        return null // ~NULL FTW~
+                    }
                 }
             }
         }

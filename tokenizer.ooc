@@ -45,6 +45,8 @@ Tokenizer : class
                 splitBuff = split(splitBuff,'\r')
                 splitBuff = split(splitBuff,',')
                 splitBuff = split(splitBuff,'"')
+                splitBuff = split(splitBuff,'(')
+                splitBuff = split(splitBuff,')')
                 // Split the string into basic token strings...
         
                 for(i in 0 .. splitBuff size)
@@ -87,6 +89,14 @@ Tokenizer : class
                         {
                             mergeTokens(tokens,i,findRightToken(tokens,i,"\""))
                             tokens get(i) type = "string"
+                        }
+                    }
+                    else if(tokens get(i) value == "(")
+                    {
+                        if(getLeftToken(tokens,i) != -1)
+                        {
+                            mergeTokens(tokens,getLeftToken(tokens,i),findNested(tokens,i,"(",")"))
+                            tokens get(getLeftToken(tokens,i)) type = "argument"
                         }
                     }
                     else if(tokens get(i) value == ";")
@@ -193,6 +203,7 @@ Tokenizer : class
     
     split : static func(strs : ArrayList<String>, delim : Char) -> ArrayList<String>// NEEDS SOME MORE FIXES :/
     {
+        // I know this function, and generally the way i handle splitting tokens sucks but i had nothing better in mind when i was writting this :p
         ret := ArrayList<String> new()
         for(i in 0 .. strs size)
         {
@@ -220,13 +231,9 @@ Tokenizer : class
         ret
     }
     
-    execute : static func(nTokens : ArrayList<Token>, tl : TemplateLoader) -> String // -> add a templateLoader argument here
+    execute : static func(nTokens : ArrayList<Token>, tl : TemplateLoader) -> String
     {
         tokens := nTokens clone()
-        // FIX SPLIT, ADD " MANAGEMENT TO RESOLVE_VARIABLE AND WERE READY TO GO =D
-        // Maybe add up a saveToFile and a loadFromFile method, to be able to kinda cache the tokens into files, for quicker execution
-        // This would be done by using a syntax like [tokenValue:tokenType], thus getting series like [<html>:HTML][ ][if][[1==1]:condition][{][ ][Show:function][:][ ]["Hello world!":string][}][ ][</html>:HTML]
-        // Just let that for later :p 
     
         for(i in 0 .. tokens size)
         {
@@ -403,7 +410,7 @@ Tokenizer : class
                 if(part findAll("ͳ") size > 0)
                 {
                     value := part substring(0,part find("ͳ",0))
-                    type := part substring(part find("ͳ",0)+2)
+                    type := part substring(part find("ͳ",0)+2) // I dont know why, but i need to do +2 instead of +1 for ͳ character, must have something to do with unicode :p
                     tokens add(Token new(value,type))
                 }
                 else
