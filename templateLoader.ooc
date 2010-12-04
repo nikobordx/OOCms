@@ -47,7 +47,7 @@ TemplateLoader : class // class that takes care of loading the template's databa
     {
         // Create our thtmlFunctions :) (Note the kewl new way to do that :D)
         thtmlFunctions add(Function new("Add",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 2)
+                            if(args size == 3)
                             {
                                 // arg 1 : resulting variable
                                 // arg 2 : left part
@@ -56,16 +56,28 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                 rsv2 := tl resolveVariable(args get(2))
                                 thtmlVars[args get(0)] = rsv1 + rsv2
                             }
+                            else
+                            {
+                                return "ERROR: Function Add takes three arguments."
+                            }
                             ""
                 }))
         thtmlFunctions add(Function new("Show",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            returned := (args size > 0) ? tl resolveVariable(args get(0)) : null
+                            returned := ""
+                            if(args size == 1)
+                            {
+                                returned = tl resolveVariable(args get(0))
+                            }
+                            else
+                            {
+                                returned = "ERROR: Function Show takes one argument."
+                            }
                             returned
                 }))
         
         thtmlFunctions add(Function new("ArrayPrint",func(args : ArrayList<String>, tl : TemplateLoader) {
                             ret := ""
-                            if(args size > 0)// we have our argument :)
+                            if(args size == 1)// we have our argument :)
                             {
                                 if(tl thtmlArrays != null && tl thtmlArrays get(args get(0)) array != null)//if there is an array with that name
                                 {
@@ -78,12 +90,16 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     }
                                 }
                             }
+                            else
+                            {
+                                ret = "ERROR: Function ArrayPrint takes one argument."
+                            }
                             ret
                 }))
         
         thtmlFunctions add(Function new("MapPrint",func(args : ArrayList<String>, tl : TemplateLoader) {
                         ret := ""
-                        if(args size > 0)
+                        if(args size == 1)
                         {
                             rsv := tl resolveVariable(args get(0))
                             if(tl thtmlMaps get(rsv) map != null)
@@ -95,24 +111,32 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                 }
                             }
                         }
+                        else
+                        {
+                            ret = "ERROR: Function MapPrint takes one argument."
+                        }
                         ret
                 }))
         
         thtmlFunctions add(Function new("Execute",func(args : ArrayList<String>, tl : TemplateLoader) { // Executes thtml code passed as argument
                         // Can be pretty cool coupled with ReadFile, they can then act as includes
                         ret := ""
-                        if(args size > 0)
+                        if(args size == 1)
                         {
                             code := tl resolveVariable(args get(0))
                             tokens := Tokenizer parse(code)
                             ret = Tokenizer execute(tokens,tl)
+                        }
+                        else
+                        {
+                            ret = "ERROR: Function Execute takes one argument."
                         }
                         ret
                 }))
         
         thtmlFunctions add(Function new("ReadFile",func(args : ArrayList<String>, tl : TemplateLoader) { // Reads data from file and stocks it to a variable
                         ret := ""
-                        if(args size > 1)
+                        if(args size == 2)
                         {
                             rsv := tl resolveVariable(args get(1))
                             file := File new(rsv)
@@ -122,15 +146,19 @@ TemplateLoader : class // class that takes care of loading the template's databa
                             }
                             else
                             {
-                                ret = "Error: Could not locate file " + rsv
+                                ret = "ERROR: Could not locate file " + rsv
                             }
+                        }
+                        else
+                        {
+                            ret = "ERROR: Function ReadFile takes two arguments."
                         }
                         ret
                         
                 }))
         
         thtmlFunctions add(Function new("Replace",func(args : ArrayList<String>, tl : TemplateLoader) {
-                        if(args size > 3) // Arg 1 : name of new variable, arg 2 : name of previous variable, arg 3 : what? , arg 4 : with
+                        if(args size == 4) // Arg 1 : name of new variable, arg 2 : name of previous variable, arg 3 : what? , arg 4 : with
                         {
                             rsv1 := tl resolveVariable(args get(1))
                             rsv2 := tl resolveVariable(args get(2))
@@ -138,20 +166,28 @@ TemplateLoader : class // class that takes care of loading the template's databa
                             
                             tl thtmlVars[args get(0)] = rsv1 replaceAll(rsv2,rsv3) // Replace all occurences of "what?" with "with" in "var"
                         }
+                        else
+                        {
+                            return "ERROR: Function Replace takes four arguments."
+                        }
                         ""
                 }))
         
         thtmlFunctions add(Function new("Set",func(args : ArrayList<String>, tl : TemplateLoader) { // Sets a variable to a certain value
-                        if(args size > 1)
+                        if(args size == 2)
                         {
                             rsv := tl resolveVariable(args get(1))
                             tl thtmlVars[args get(0)] = rsv
+                        }
+                        else
+                        {
+                            return "ERROR: Function Set takes two arguments."
                         }
                         ""
                 }))
         
         thtmlFunctions add(Function new("SetArray",func(args : ArrayList<String>, tl : TemplateLoader) { // Set an array variable to a ceratin value
-                        if(args size > 2)
+                        if(args size == 3)
                         {
                             index := tl resolveVariable(args get(0)) toInt()
                             name := tl resolveVariable(args get(1))
@@ -183,11 +219,15 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                 tl thtmlArrays get(name) array add(index,value)
                             }
                         }
+                        else
+                        {
+                            return "ERROR: Function SetArray takes three arguments."
+                        }
                         ""
                 }))
         
         thtmlFunctions add(Function new("SetMap",func(args : ArrayList<String>, tl : TemplateLoader) { // Set a map variable to a certain value
-                        if(args size > 2)
+                        if(args size == 3)
                         {
                             index := tl resolveVariable(args get(0))
                             name := tl resolveVariable(args get(1))
@@ -203,22 +243,30 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                 tl thtmlMaps get(name) map[index] = value
                             }
                         }
+                        else
+                        {
+                            return "ERROR: Function SetMap takes three arguments."
+                        }
                         ""
                 }))
         
         thtmlFunctions add(Function new("EscapeHtml",func(args : ArrayList<String>, tl : TemplateLoader) { // Sets a variable with escaped html output of another variable
-                        if(args size > 1)
+                        if(args size == 2)
                         {
                             rsv := tl resolveVariable(args get(1))
                             rsv = rsv replaceAll("<","&lt;")
                             rsv = rsv replaceAll(">","&gt;")
                             tl thtmlVars[args get(0)] = rsv
                         }
+                        else
+                        {
+                            return "ERROR: Function EscapeHtml takes two arguments."
+                        }
                         ""
                 }))
         
         thtmlFunctions add(Function new("DescOrder",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 0)
+                            if(args size == 1)
                             {
                                 if(tl db != null)
                                 {
@@ -226,11 +274,15 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     tl db sortDescending(rsv)
                                 }
                             }
+                            else
+                            {
+                                return "ERROR: Function DescOrder takes one argument."
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("AscOrder",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 0)
+                            if(args size == 1)
                             {
                                 if(tl db != null)
                                 {
@@ -238,11 +290,15 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     tl db sortAscending(rsv)
                                 }
                             }
+                            else
+                            {
+                                return "ERROR: Function AscOrder takes one argument."
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("Database",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 0)
+                            if(args size == 1)
                             {
                                 rsv1 := tl resolveVariable(args get(0))
                                 if(rsv1 != null)
@@ -250,11 +306,15 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     tl db = Database new("databases/"+rsv1+".csv")
                                 }
                             }
+                            else
+                            {
+                                return "ERROR: Function Database takes one argument"
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("Column",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 1)
+                            if(args size == 2)
                             {
                                 rsv := tl resolveVariable(args get(1))
                                 if(tl db selectColumn(rsv) != null)
@@ -273,33 +333,45 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     }
                                 }
                             }
+                            else
+                            {
+                                return "ERROR: Function Column takes two arguments."
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("LineCount",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 0)
+                            if(args size == 1)
                             {
                                 if(tl db columns != null)
                                 {
                                     tl thtmlVars[args get(0)] = ("%d" format(tl db columns get(0) fields size))
                                 }
                             }
+                            else
+                            {
+                                return "ERROR: Function LineCount takes one argument."
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("ColumnCount",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 0)
+                            if(args size == 1)
                             {
                                 if(tl db columns != null)
                                 {
                                     tl thtmlVars[args get(0)] = ("%d" format(tl db columns size))
                                 }
                             }
+                            else
+                            {
+                                return "ERROR: Function ColumnCount takes one argument."
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("DatabaseCount",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 0)
+                            if(args size == 1)
                             {
                                 databases := File new("databases")
                                 count := databases getChildren() size
@@ -308,11 +380,15 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     tl thtmlVars[args get(0)] = ("%d" format(count))
                                 }
                             }
+                            else
+                            {
+                                return "ERROR: Function DatabaseCount takes one argument."
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("DatabaseNames",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 0)
+                            if(args size == 1)
                             {
                                 databases := File new("databases")
                                 tempArray := databases getChildrenNames()
@@ -324,11 +400,15 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                 tempContainer array = tempArray
                                 tl thtmlArrays[args get(0)] = tempContainer
                             }
+                            else
+                            {
+                                return "ERROR: Function DatabaseNames takes one argument."
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("ColumnNames",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 0)
+                            if(args size == 1)
                             {
                                 if(tl db columns != null)
                                 {
@@ -342,12 +422,16 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     tl thtmlArrays[args get(0)] = tempContainer
                                 }
                             }
+                            else
+                            {
+                                return "ERROR: Function ColumnNames takes one argument."
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("PrintDatabase",func(args : ArrayList<String>, tl : TemplateLoader) {
                             ret := ""
-                            if(args size > 0)
+                            if(args size == 1)
                             {
                                 countS := tl resolveVariable(args get(0))
                                 if(countS != null && db != null)
@@ -380,11 +464,15 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     }
                                 }
                             }
+                            else
+                            {
+                                ret = "ERROR: Function PrintDatabase takes one argument."
+                            }
                             ret
                 }))
         
         thtmlFunctions add(Function new("Line",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 2)
+                            if(args size == 3)
                             {
                                 rsv1 := tl resolveVariable(args get(0))
                                 rsv2 := tl resolveVariable(args get(1))
@@ -405,11 +493,15 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     }
                                 }
                             }
+                            else
+                            {
+                                return "ERROR: Function Line takes three arguments."
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("DeleteLine",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 0)
+                            if(args size == 1)
                             {
                                 indexS := tl resolveVariable(args get(0))
                                 if(indexS != null)
@@ -419,11 +511,15 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     tl db save()
                                 }
                             }
+                            else
+                            {
+                                return "ERROR: Function DeleteLine takes one argument."
+                            }
                             ""
                 }))
         
         thtmlFunctions add(Function new("EditField",func(args : ArrayList<String>, tl : TemplateLoader) {
-                            if(args size > 2)
+                            if(args size == 3)
                             {
                                 param1 := tl resolveVariable(args get(0))
                                 param2 := tl resolveVariable(args get(1))
@@ -452,6 +548,10 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     }
                                     tl db save()
                                 }
+                            }
+                            else
+                            {
+                                return "ERROR: Function EditField takes three arguments."
                             }
                             ""
                 }))
