@@ -85,10 +85,21 @@ Tokenizer : class
                     }
                     else if(tokens get(i) value == "\"")
                     {
-                        if(findRightToken(tokens,i,"\"") != -1)
+                        a := i
+                        while(findRightToken(tokens,a,"\"") != -1)
                         {
-                            mergeTokens(tokens,i,findRightToken(tokens,i,"\""))
-                            tokens get(i) type = "string"
+                            ind := findRightToken(tokens,a,"\"")
+                            if(tokens get(ind-1) value endsWith?("\\"))
+                            {
+                                tokens get(ind-1) value = tokens get(ind-1) value trimRight('\\')
+                                a = ind
+                            }
+                            else
+                            {
+                                mergeTokens(tokens,i,ind)
+                                tokens get(i) type = "string"
+                                break
+                            }
                         }
                     }
                     else if(tokens get(i) value == "(")
