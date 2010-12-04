@@ -7,6 +7,7 @@ AddressParser : class // class that parses the query passed to CGI object and st
     template : String
     getParams := MultiMap<String,String> new()
     postParams := MultiMap<String,String> new()
+    cookies := MultiMap<String,String> new()
     init : func ()
     {
     }
@@ -23,5 +24,6 @@ AddressParser : class // class that parses the query passed to CGI object and st
         
         getParams = cgi getArray
         postParams = cgi postArray
+        cookies = cgi cookies
     }
 }

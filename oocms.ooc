@@ -17,6 +17,7 @@ main : func -> Int
     cgi setHeader("Status",tl status)
     
     cgi setHeader("Content-type","text/html")
+    cgi setCookies(tl thtmlMaps get("_COOKIE") map)
     
     cgi forgeResponse()
     cgi response print()

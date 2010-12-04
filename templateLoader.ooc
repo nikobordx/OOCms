@@ -616,6 +616,13 @@ TemplateLoader : class // class that takes care of loading the template's databa
         }
         thtmlMaps["_POST"] = tempPostMap
     
+        tempCookiesMap := StrStrMapContainer new()
+        for(i in 0 .. ap cookies size)
+        {
+            tempCookiesMap map[ap cookies getKeys() get(i)] = ap cookies get(ap cookies getKeys() get(i))
+        }
+        thtmlMaps["_COOKIE"] = tempCookiesMap
+    
         thtmlMaps["_CONFIG"] = loadConfig()
     
         //thtmlMaps["_SESSION"] = loadSession()
