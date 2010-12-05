@@ -3,8 +3,6 @@ import io/File
 import text/StringTokenizer
 import templateLoader
 
-//Still problems with split, fix them :/
-
 Token : class
 {
     value : String
@@ -31,29 +29,35 @@ Tokenizer : class
                     tokens add(Token new(str substring(closes get(i-1)+2,opens get(i)),"HTML")) // add the HTML token between two thtml blocks
                 }
         
+                
                 string := str substring(opens get(i)+2,closes get(i))
-                splitBuff := ArrayList<String> new()
-                splitBuff add(string)
-                splitBuff = split(splitBuff,' ')
-                splitBuff = split(splitBuff,'{')
-                splitBuff = split(splitBuff,'}')
-                splitBuff = split(splitBuff,'[')
-                splitBuff = split(splitBuff,']')
-                splitBuff = split(splitBuff,';')
-                splitBuff = split(splitBuff,':')
-                splitBuff = split(splitBuff,'\n')
-                splitBuff = split(splitBuff,'\r')
-                splitBuff = split(splitBuff,',')
-                splitBuff = split(splitBuff,'"')
-                splitBuff = split(splitBuff,'(')
-                splitBuff = split(splitBuff,')')
-                splitBuff = split(splitBuff,'\t')
-                // Split the string into basic token strings...
         
-                for(i in 0 .. splitBuff size)
+        
+                //CHANGE BASIC TOKENIZATION ALGORITHM
+                // do something like
+                // characters := ArrayList<Char> new() .add(' ') .add('{') .add('}') .add('[') etc..
+                // Then go through string
+                // Each time we "hit" one of these characters, split into a new token :) 
+                // Much quicker and more effective ;D
+        
+                symbols := ArrayList<Char> new() .add(' ') .add('{') .add('}') .add('[') .add(']') .add(';') .add(':') .add('\n') .add('\r') .add('\t') .add(',') .add('"') .add('(') .add(')')
+        
+                temp := ""
+                for(character in string)
                 {
-                    tokens add(Token new(splitBuff get(i)))// turn string into tokens :) 
+                    if(symbols indexOf(character) != -1)
+                    {
+                        tokens add(Token new(temp))
+                        tokens add(Token new(character as String))
+                        temp = ""
+                    }
+                    else
+                    {
+                        temp += character
+                    }
                 }
+                tokens add(Token new(temp))
+                
                 
                 // edit the tokens
                 for(i in 0 .. tokens size)
@@ -111,7 +115,7 @@ Tokenizer : class
                     {
                         if(getLeftToken(tokens,i) != -1)
                         {
-                            mergeTokens(tokens,getLeftToken(tokens,i),findNested(tokens,i,"(",")"))
+                            mergeTokens(tokens,getLeftToken(tokens,i),findNested(tokens,i,"(",")")+1)
                             tokens get(getLeftToken(tokens,i)) type = "argument"
                         }
                     }
@@ -215,36 +219,6 @@ Tokenizer : class
             }
         }
         -1
-    }
-    
-    split : static func(strs : ArrayList<String>, delim : Char) -> ArrayList<String>// NEEDS SOME MORE FIXES :/
-    {
-        // I know this function, and generally the way i handle splitting tokens sucks but i had nothing better in mind when i was writting this :p
-        ret := ArrayList<String> new()
-        for(i in 0 .. strs size)
-        {
-            temp := strs get(i) split(delim,true)
-            if(temp size > 0)
-            {
-                for(j in 0 .. temp size)
-                {
-                    if(temp get(j) == "")
-                    {
-                        ret add(delim as String)
-                    }
-                    else
-                    {
-                        ret add(temp get(j))
-                        if(j < temp size-1) { if(temp get(j+1) != "") {ret add(delim as String) } }
-                    }
-                }
-            }
-            else
-            {
-                ret add(strs get(i))
-            }
-        }
-        ret
     }
     
     execute : static func(nTokens : ArrayList<Token>, tl : TemplateLoader) -> String

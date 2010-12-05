@@ -1,6 +1,6 @@
-¤ͳHTML¤¤¤¤¤¤
-¤¤SetMapͳfunction¤¤:¤¤ ¤¤"comments"ͳstring¤¤,¤¤"_GET"ͳstring¤¤,¤¤NULLͳargument¤¤¤¤
-¤¤
+¤ͳHTML¤¤¤¤¤¤¤¤
+¤¤SetMapͳfunction¤¤:¤¤¤¤ ¤¤¤¤"comments"ͳstring¤¤¤¤,¤¤¤¤"_GET"ͳstring¤¤¤¤,¤¤NULLͳargument¤¤¤¤¤¤
+¤¤¤¤
 <script type="text/javascript">
 var i = 0
 function nextNews()
@@ -32,27 +32,27 @@ function prevNews()
 }
 </script>
 
-ͳHTML¤¤¤¤¤¤
-¤¤SetMapͳfunction¤¤:¤¤ ¤¤"id"ͳstring¤¤,¤¤"_GET"ͳstring¤¤,¤¤0ͳargument¤¤¤¤
-¤¤ReadFileͳfunction¤¤:¤¤ ¤¤showNewsͳargument¤¤,¤¤"templates/IndexTemplate/showNews.thtml"ͳstring¤¤¤¤
-¤¤¤¤¤¤
-¤¤Databaseͳfunction¤¤:¤¤ ¤¤"news"ͳstring¤¤¤¤
-¤¤DescOrderͳfunction¤¤:¤¤ ¤¤"id"ͳstring¤¤¤¤
-¤¤Columnͳfunction¤¤:¤¤ ¤¤Titleͳargument¤¤,¤¤"title"ͳstring¤¤¤¤
-¤¤Columnͳfunction¤¤:¤¤ ¤¤Contentsͳargument¤¤,¤¤"contents"ͳstring¤¤¤¤
-¤¤LineCountͳfunction¤¤:¤¤ ¤¤NewsCountͳargument¤¤¤¤
-¤¤
+ͳHTML¤¤¤¤¤¤¤¤
+¤¤SetMapͳfunction¤¤:¤¤¤¤ ¤¤¤¤"id"ͳstring¤¤¤¤,¤¤¤¤"_GET"ͳstring¤¤¤¤,¤¤0ͳargument¤¤¤¤¤¤
+¤¤ReadFileͳfunction¤¤:¤¤¤¤ ¤¤showNewsͳargument¤¤,¤¤¤¤"templates/IndexTemplate/showNews.thtml"ͳstring¤¤¤¤¤¤¤¤
+¤¤¤¤¤¤¤¤
+¤¤Databaseͳfunction¤¤:¤¤¤¤ ¤¤¤¤"news"ͳstring¤¤¤¤¤¤¤¤
+¤¤DescOrderͳfunction¤¤:¤¤¤¤ ¤¤¤¤"id"ͳstring¤¤¤¤¤¤¤¤
+¤¤Columnͳfunction¤¤:¤¤¤¤ ¤¤Titleͳargument¤¤,¤¤¤¤"title"ͳstring¤¤¤¤¤¤¤¤
+¤¤Columnͳfunction¤¤:¤¤¤¤ ¤¤Contentsͳargument¤¤,¤¤¤¤"contents"ͳstring¤¤¤¤¤¤¤¤
+¤¤LineCountͳfunction¤¤:¤¤¤¤ ¤¤NewsCountͳargument¤¤¤¤¤¤
+¤¤¤¤
 
 <div id="newsBox">
-ͳHTML¤¤¤¤¤¤
-¤¤Setͳfunction¤¤:¤¤ ¤¤iͳargument¤¤,¤¤0ͳargument¤¤¤¤
-¤¤Executeͳfunction¤¤:¤¤ ¤¤showNewsͳargument¤¤¤¤
-¤¤
+ͳHTML¤¤¤¤¤¤¤¤
+¤¤Setͳfunction¤¤:¤¤¤¤ ¤¤iͳargument¤¤,¤¤0ͳargument¤¤¤¤¤¤
+¤¤Executeͳfunction¤¤:¤¤¤¤ ¤¤showNewsͳargument¤¤¤¤¤¤
+¤¤¤¤
 </div>
 
 <a href="javascript:nextNews()">Next</a><br/>
 <a href="javascript:prevNews()">Previous</a>
 <br/><br/>
 
-<a href="oocms.cgi?page=index&subpage=allNews">Show all ͳHTML¤¤Showͳfunction¤¤:¤¤NewsCountͳargument¤¤;¤¤ news.</a>
+<a href="oocms.cgi?page=index&subpage=allNews">Show all ͳHTML¤¤Showͳfunction¤¤:¤¤NewsCountͳargument¤¤;¤¤¤¤ news.</a>
 ͳHTML¤

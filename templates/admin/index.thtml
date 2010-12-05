@@ -1,131 +1,109 @@
-<% if[ _GET("name") == _CONFIG("adminName") ]{
-    if[ _GET("password") == _CONFIG("adminPass") ]{
-        <!--  Logged in as administrator -->
+<%
+ReadFile: login,"templates/admin/login.thtml"
+
+if[_SESSION("logged") == "true"]{   
+    if[_POST("action") == NULL]{
+        %>
+        <p>General Administration (try oocms.cgi?page=admin&amp;subpage=[moduleName] for specific administration</p>
+        <%
+        if[_GET("database") == NULL]{
+        %>
+            <h1>Listing databases</h1><br/>
+            <%
+            DatabaseNames: dbs
+            DatabaseCount: num
             
-        if[ _POST("action") == NULL ]{
-            <!-- No action :) -->
-            if[ _GET("database") == NULL ]{
+            for[i: 0 .. num]{
             %>
-                <!-- And no database selected -->
-                <h1>Listing databases</h1><br/>
-                <%
-                    DatabaseNames: dbs
-                    DatabaseCount: num
-                
-                for[ i: 0 .. num ]{
-                %>
-                    <a href="oocms.cgi?page=admin&database=<%Show: dbs(i);%>&name=<%Show: _GET("name");%>&password=<%Show: _GET("password");%>"><%Show: dbs(i);%></a><br/>
-                <%
-                }
-                
-            }
-            if[ _GET("database") != NULL ]{
-                <!-- Database selected -->
-                %>
-                <h1>Listing database <%Show: _GET("database");%></h1><br/>
-                <%
-                    Database: _GET("database")
-                    LineCount: lineCount
-                    PrintDatabase: lineCount
-                %>
-                <br/><br/>
-                <h3>Delete line</h3>
-                <em>Tip: numbering of lines starts at zero</em><br/><br/>
-                <form method="POST" action="oocms.cgi?page=admin&name=<% Show: _GET("name"); %>&password=<% Show: _GET("password"); %>&database=<% Show: _GET("database"); %>">
-                    <input type="hidden" name="action" value="delete"/>
-                    Number of line:<input type="text" name="deleteIndex" /><br/>
-                    <input type="submit" value="Delete" />
-                </form>
-                <br/><br/>
-                <h3>Edit/Create line</h3>
-                <em>Tip: numbering of lines starts at zero</em><br/>
-                <em>Tip: to create a line just leave number of line field empty</em><br/>
-                <em>Tip: leave a field empty to specify you do not want to change its value</em><br/><br/>
-                <form method="POST" action="oocms.cgi?page=admin&name=<% Show: _GET("name"); %>&password=<% Show: _GET("password"); %>&database=<% Show: _GET("database"); %>">
-                    <input type="hidden" name="action" value="edit"/>
-                    <p>Number of line:<input type="text" name="lineIndex" /><br/></p>
-                    <%
-                        ColumnCount: fields
-                    %>
-                    <input type="hidden" name="fields" value="<%Show: fields;%>"/>
-                    <%
-                    for[ i: 0 .. fields ]{
-                    %>
-                        <p>Column <%Show: i;%>:<input type="text" name="data<%Show: i;%>"/><br/></p>
-                    <%
-                    }
-                    %>
-                    <input type="submit" value="Edit" />
-                </form>
+                <a href="oocms.cgi?page=admin&database=<%Show: dbs(i);%>"><%Show: dbs(i);%></a><br/>
             <%
             }
+            
         }
-        if[ _POST("action") != NULL ]{
-            if[ _GET("database") != NULL ]{
-        
+        if[_GET("database") != NULL]{
+            %>
+            <h1>Listing database <%Show: _GET("database");%></h1><br/>
+            <%
                 Database: _GET("database")
-        
-                if[ _POST("action") == "delete" ]{
-                    DeleteLine: _POST("deleteIndex")
-                    %>
-                    <p>Line <%Show: _POST("deleteIndex");%> deleted.</p>
-                    <%
+                LineCount: lineCount
+                PrintDatabase: lineCount
+            %>
+            <br/><br/>
+            <h3>Delete line</h3>
+            <em>Tip: numbering of lines starts at zero</em><br/><br/>
+            <form method="POST" action="oocms.cgi?page=admin&database=<% Show: _GET("database"); %>">
+                <input type="hidden" name="action" value="delete"/>
+                Number of line:<input type="text" name="deleteIndex" /><br/>
+                <input type="submit" value="Delete" />
+            </form>
+            <br/><br/>
+            <h3>Edit/Create line</h3>
+            <em>Tip: numbering of lines starts at zero</em><br/>
+            <em>Tip: to create a line just leave number of line field empty</em><br/>
+            <em>Tip: leave a field empty to specify you do not want to change its value</em><br/><br/>
+            <form method="POST" action="oocms.cgi?page=admin&database=<% Show: _GET("database"); %>">
+                <input type="hidden" name="action" value="edit"/>
+                <p>Number of line:<input type="text" name="lineIndex" /><br/></p>
+                <%
+                    ColumnCount: fields
+                %>
+                <input type="hidden" name="fields" value="<%Show: fields;%>"/>
+                <%
+                for[ i: 0 .. fields ]{
+                %>
+                    <p>Column <%Show: i;%>:<input type="text" name="data<%Show: i;%>"/><br/></p>
+                <%
                 }
-                if[ _POST("action") == "edit" ]{
-                    if[ _POST("fields") != NULL ]{
-                        if[ _POST("lineIndex") != NULL]{
-                            for[ i: 0 .. _POST("fields") ]{
-                
-                            Add: fieldData,"data",i
-                
-                            if[ _POST(fieldData) != NULL ]{
-                
-                                    EditField: _POST("lineIndex"),i,_POST(fieldData)
-                                }
+                %>
+                <input type="submit" value="Edit" />
+            </form>
+        <%
+        }
+    }
+    if[_POST("action") != NULL]{
+        if[_GET("database") != NULL]{
+    
+            Database: _GET("database")
+    
+            if[_POST("action") == "delete"]{
+                DeleteLine: _POST("deleteIndex")
+                %>
+                <p>Line <%Show: _POST("deleteIndex");%> deleted.</p>
+                <%
+            }
+            if[_POST("action") == "edit"]{
+                if[_POST("fields") != NULL]{
+                    if[_POST("lineIndex") != NULL]{
+                        for[ i: 0 .. _POST("fields") ]{
+            
+                        Add: fieldData,"data",i
+            
+                        if[ _POST(fieldData) != NULL ]{
+            
+                                EditField: _POST("lineIndex"),i,_POST(fieldData)
                             }
-                            %>
-                            <p>Line edited with success. <a href="oocms.cgi?page=admin&name=<% Show: _GET("name"); %>&password=<% Show: _GET("password"); %> ">Return to administration index.</a></p>
-                            <%
                         }
-                        if[ _POST("lineIndex") == NULL]{
-                            Add: fieldData,"data",i
-                            LineCount: lineIndex
-                            for[ i: 0 .. _POST("fields") ]{
-                                    EditField: lineIndex,i,_POST(fieldData)
-                            }
-                            %>
-                            <p>Line created with success. <a href="oocms.cgi?page=admin&name=<% Show: _GET("name"); %>&password=<% Show: _GET("password"); %> ">Return to administration index.</a></p>
-                            <%
+                        %>
+                        <p>Line edited with success. <a href="oocms.cgi?page=admin">Return to administration index.</a></p>
+                        <%
+                    }
+                    if[_POST("lineIndex") == NULL]{
+                        Add: fieldData,"data",i
+                        LineCount: lineIndex
+                        for[ i: 0 .. _POST("fields") ]{
+                                EditField: lineIndex,i,_POST(fieldData)
                         }
+                        %>
+                        <p>Line created with success. <a href="oocms.cgi?page=admin">Return to administration index.</a></p>
+                        <%
                     }
                 }
             }
         }
     }
-    if[ _GET("password") != _CONFIG("adminPass") ]{
-        %>
-        <!-- Not logged in as administrator -->
-        <p>You must login as an administrator to access the control panel</p><br/>
-        <form method="GET" action="oocms.cgi">
-            <input type="hidden" name="page" value="admin"/>
-            Name: <input type="text" name="name" /><br/>
-            Password: <input type="password" name="password" /><br/>
-            <input type="submit" value="login" />
-        </form>
-        <%
-    }
 }
-if[ _GET("name") != _CONFIG("adminName") ]{
-%>
-<!-- Not logged in as administrator -->
-<p>You must login as an administrator to access the control panel</p><br/>
-<form method="GET" action="oocms.cgi">
-    Name: <input type="text" name="name" /><br/>
-    <input type="hidden" name="page" value="admin"/>
-    Password: <input type="password" name="password" /><br/>
-    <input type="submit" value="login" />
-</form>
-<%
+if[_SESSION("logged") != "true"]{
+    Execute: login
 }
 %>
 <br/><br/><br/>

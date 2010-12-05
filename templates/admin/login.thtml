@@ -1,0 +1,30 @@
+<%
+if[_POST("name") == NULL]{
+%>
+<p>You must login as an administrator to access the control panel</p><br/>
+<form method="POST" action="oocms.cgi?page=admin&subpage=login">
+    <input type="hidden" name="page" value="admin"/>
+    Name: <input type="text" name="name" /><br/>
+    Password: <input type="password" name="password" /><br/>
+    <input type="submit" value="login" />
+</form>
+<%
+}
+if[_POST("name") != NULL]{
+    if[_POST("name") == _CONFIG("adminName")]{
+        if[_POST("password") == _CONFIG("adminPass")]{
+            SetMap: "logged","_SESSION","true"
+	    %>
+		You are now successfully logged in.
+	    <%
+        }
+    }
+
+    if[_SESSION("logged") != "true"]
+    {
+	%>
+	Invalid name/password combination.
+	<%
+    }
+}
+%>
