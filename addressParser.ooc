@@ -4,6 +4,7 @@ import structs/MultiMap
 
 AddressParser : class // class that parses the query passed to CGI object and stores the name of the template to open and the variables to pass to it
 {
+    design? := true
     template : String
     getParams := MultiMap<String,String> new()
     postParams := MultiMap<String,String> new()
@@ -21,6 +22,8 @@ AddressParser : class // class that parses the query passed to CGI object and st
         {
             template = cgi getArray get("page")
         }
+    
+        design? = !(cgi getArray get("mode") == "designless")
         
         getParams = cgi getArray
         postParams = cgi postArray
