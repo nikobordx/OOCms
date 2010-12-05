@@ -47,6 +47,7 @@ Tokenizer : class
                 splitBuff = split(splitBuff,'"')
                 splitBuff = split(splitBuff,'(')
                 splitBuff = split(splitBuff,')')
+                splitBuff = split(splitBuff,'\t')
                 // Split the string into basic token strings...
         
                 for(i in 0 .. splitBuff size)
@@ -72,15 +73,19 @@ Tokenizer : class
                     }
                     else if(tokens get(i) value == "[")
                     {
-                        if(findLeftToken(tokens,i,"if") != -1)
+                        if(getLeftToken(tokens,i) != -1)
                         {
-                            mergeTokens(tokens,i,findRightToken(tokens,i,"]"))
-                            tokens get(i) type = "condition"
-                        }
-                        else if(findLeftToken(tokens,i,"for") != -1)
-                        {
-                            mergeTokens(tokens,i,findRightToken(tokens,i,"]"))
-                            tokens get(i) type = "loop"
+                            left := getLeftToken(tokens,i)
+                            if(tokens get(left) value == "if")
+                            {
+                                mergeTokens(tokens,i,findRightToken(tokens,i,"]"))
+                                tokens get(i) type = "condition"
+                            }
+                            else if(tokens get(left) value == "for")
+                            {
+                                mergeTokens(tokens,i,findRightToken(tokens,i,"]"))
+                                tokens get(i) type = "loop"
+                            }
                         }
                     }
                     else if(tokens get(i) value == "\"")
@@ -192,7 +197,7 @@ Tokenizer : class
         while(currentIndex > 0)
         {
             currentIndex -= 1
-            if(tokens get(currentIndex) value != " " && tokens get(currentIndex) value != "\n" && tokens get(currentIndex) value != "\r" && tokens get(currentIndex) value != "")
+            if(tokens get(currentIndex) value != "\t" && tokens get(currentIndex) value != " " && tokens get(currentIndex) value != "\n" && tokens get(currentIndex) value != "\r" && tokens get(currentIndex) value != "")
             {
                 return currentIndex
             }
@@ -204,7 +209,7 @@ Tokenizer : class
     {
         for(i in currentIndex+1 .. tokens size)
         {
-            if(tokens get(i) value != " " && tokens get(i) value != "\n" && tokens get(i) value != "\r" && tokens get(i) value != "")
+            if(tokens get(i) value != "\t" && tokens get(i) value != " " && tokens get(i) value != "\n" && tokens get(i) value != "\r" && tokens get(i) value != "")
             {
                 return i
             }

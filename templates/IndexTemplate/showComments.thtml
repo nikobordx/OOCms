@@ -1,0 +1,23 @@
+<%
+Database: "comments"
+DescOrder: "id"
+Column: author,"author"
+Column: email,"email"
+Column: newsId,"newsId"
+Column: date,"date"
+Column: contents,"contents"
+LineCount: commentsCount
+
+for[j:0..commentsCount]{
+    if[newsId(j) == i]{
+        EscapeHtml: aut,author(j)
+	EscapeHtml: mail,email(j)
+	EscapeHtml: cont,contents(j)
+	%>
+	    <p>Comment posted by <%Show:aut;%> (email:<%Show:mail;%>) at <%Show:date(j);%></p><br/>
+            <p><%Show:cont;%></p>
+	<%
+    }
+}
+%>
+

@@ -1,0 +1,58 @@
+¤ͳHTML¤¤¤¤¤¤
+¤¤SetMapͳfunction¤¤:¤¤ ¤¤"comments"ͳstring¤¤,¤¤"_GET"ͳstring¤¤,¤¤NULLͳargument¤¤¤¤
+¤¤
+<script type="text/javascript">
+var i = 0
+function nextNews()
+{
+    i++;
+    if (window.XMLHttpRequest)
+    {
+        xmlhttp=new XMLHttpRequest();
+    }
+    else
+    {
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    
+    xmlhttp.onreadystatechange=function()
+    {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            document.getElementById('newsBox').innerHTML=xmlhttp.responseText;
+        }
+    }
+    xmlhttp.open("GET","oocms.cgi?page=index&subpage=showNews&id="+i+"&mode=designless&comments=false",true);
+    xmlhttp.send();
+}
+function prevNews()
+{
+    i -= 2;
+    nextNews();
+}
+</script>
+
+ͳHTML¤¤¤¤¤¤
+¤¤SetMapͳfunction¤¤:¤¤ ¤¤"id"ͳstring¤¤,¤¤"_GET"ͳstring¤¤,¤¤0ͳargument¤¤¤¤
+¤¤ReadFileͳfunction¤¤:¤¤ ¤¤showNewsͳargument¤¤,¤¤"templates/IndexTemplate/showNews.thtml"ͳstring¤¤¤¤
+¤¤¤¤¤¤
+¤¤Databaseͳfunction¤¤:¤¤ ¤¤"news"ͳstring¤¤¤¤
+¤¤DescOrderͳfunction¤¤:¤¤ ¤¤"id"ͳstring¤¤¤¤
+¤¤Columnͳfunction¤¤:¤¤ ¤¤Titleͳargument¤¤,¤¤"title"ͳstring¤¤¤¤
+¤¤Columnͳfunction¤¤:¤¤ ¤¤Contentsͳargument¤¤,¤¤"contents"ͳstring¤¤¤¤
+¤¤LineCountͳfunction¤¤:¤¤ ¤¤NewsCountͳargument¤¤¤¤
+¤¤
+
+<div id="newsBox">
+ͳHTML¤¤¤¤¤¤
+¤¤Setͳfunction¤¤:¤¤ ¤¤iͳargument¤¤,¤¤0ͳargument¤¤¤¤
+¤¤Executeͳfunction¤¤:¤¤ ¤¤showNewsͳargument¤¤¤¤
+¤¤
+</div>
+
+<a href="javascript:nextNews()">Next</a><br/>
+<a href="javascript:prevNews()">Previous</a>
+<br/><br/>
+
+<a href="oocms.cgi?page=index&subpage=allNews">Show all ͳHTML¤¤Showͳfunction¤¤:¤¤NewsCountͳargument¤¤;¤¤ news.</a>
+ͳHTML¤

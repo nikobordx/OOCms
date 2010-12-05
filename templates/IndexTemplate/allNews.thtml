@@ -5,20 +5,11 @@ Column: Title,"title"
 Column: Contents,"contents"
 LineCount: NewsCount
 
+SetMap: "comments","_GET",NULL
+ReadFile: showNews,"templates/IndexTemplate/showNews.thtml"
+
 for[i:0..NewsCount]{
-    if[Title(i) != NULL]{
-%>
-    <div class="cadre">
-        <div class="titre">
-            <%Show: Title(i);%>
-        </div>
-        <div class="marge_interne">
-            <br/>
-            <%Show: Contents(i);%>
-        </div>
-    </div>
-    <br/><br/>
-<%
-    }
+    SetMap: "id","_GET",i
+    Execute: showNews
 }
 %>

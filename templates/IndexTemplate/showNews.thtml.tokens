@@ -1,0 +1,41 @@
+¤ͳHTML¤¤
+¤¤Databaseͳfunction¤¤:¤¤ ¤¤"news"ͳstring¤¤
+¤¤DescOrderͳfunction¤¤:¤¤ ¤¤"id"ͳstring¤¤
+¤¤Columnͳfunction¤¤:¤¤ ¤¤Titleͳargument¤¤,¤¤"title"ͳstring¤¤
+¤¤Columnͳfunction¤¤:¤¤ ¤¤Contentsͳargument¤¤,¤¤"contents"ͳstring¤¤
+¤¤Setͳfunction¤¤:¤¤ ¤¤iͳargument¤¤,¤¤ ¤¤_GET("id")ͳargument¤¤)¤¤
+¤¤if¤¤[Title(i) != NULL]ͳcondition¤¤{¤¤
+¤¤
+¤¤
+    <div class="cadre">
+        <div class="titre">
+            <a href="oocms.cgi?page=index&subpage=showNews&id=ͳHTML¤¤Showͳfunction¤¤:¤¤iͳargument¤¤;¤¤&comments=true">ͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤Title(i)ͳargument¤¤;¤¤</a>
+        </div>
+        <div class="marge_interne">
+            <br/>
+            ͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤Contents(i)ͳargument¤¤;¤¤
+        </div>
+    </div>
+    <br/><br/>
+ͳHTML¤¤
+¤¤
+¤¤ ¤¤ ¤¤ ¤¤if¤¤[_GET("comments")) == "true"]ͳcondition¤¤{¤¤
+¤¤	¤¤ReadFileͳfunction¤¤:¤¤ ¤¤showCommentsͳargument¤¤,¤¤"templates/IndexTemplate/showComments.thtml"ͳstring¤¤
+¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ReadFileͳfunction¤¤:¤¤ ¤¤postCommentsͳargument¤¤,¤¤"templates/IndexTemplate/postComments.thtml"ͳstring¤¤
+¤¤	¤¤Executeͳfunction¤¤:¤¤ ¤¤showCommentsͳargument¤¤
+¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤Executeͳfunction¤¤:¤¤ ¤¤postCommentsͳargument¤¤
+¤¤ ¤¤ ¤¤ ¤¤}¤¤
+¤¤
+¤¤}¤¤
+¤¤if¤¤[Title(i) == NULL]ͳcondition¤¤
+¤¤
+¤¤{¤¤
+¤¤
+¤¤ ¤¤ ¤¤ ¤¤ ¤¤
+        <p>No news with id ͳHTML¤¤Showͳfunction¤¤:¤¤iͳargument¤¤;¤¤</p>
+    ͳHTML¤¤
+¤¤
+¤¤}¤¤
+¤¤
+¤¤
+ͳHTML¤

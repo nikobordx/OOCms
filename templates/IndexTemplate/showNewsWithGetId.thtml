@@ -1,0 +1,22 @@
+<%
+Database: "news"
+DescOrder: "id"
+Column: Title,"title"
+Column: Contents,"contents"
+Set: i, _GET("id")
+
+if[Title(i) != NULL]{
+%>
+    <div class="cadre">
+        <div class="titre">
+            <%Show: Title(i);%>
+        </div>
+        <div class="marge_interne">
+            <br/>
+            <%Show: Contents(i);%>
+        </div>
+    </div>
+    <br/><br/>
+<%
+}
+%>

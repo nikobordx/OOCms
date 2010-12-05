@@ -1,0 +1,34 @@
+<%
+Database: "news"
+DescOrder: "id"
+Column: Title,"title"
+Column: Contents,"contents"
+Set: i, _GET("id")
+
+if[Title(i) != NULL]{
+%>
+    <div class="cadre">
+        <div class="titre">
+            <a href="oocms.cgi?page=index&subpage=showNews&id=<%Show:i;%>&comments=true"><%Show: Title(i);%></a>
+        </div>
+        <div class="marge_interne">
+            <br/>
+            <%Show: Contents(i);%>
+        </div>
+    </div>
+    <br/><br/>
+<%
+    if[_GET("comments") == "true"]{
+	ReadFile: showComments,"templates/IndexTemplate/showComments.thtml"
+        ReadFile: postComments,"templates/IndexTemplate/postComments.thtml"
+	Execute: showComments
+        Execute: postComments
+    }
+}
+if[Title(i) == NULL]
+{
+    %>
+        <p>No news with id <%Show:i;%></p>
+    <%
+}
+%>

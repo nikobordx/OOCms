@@ -1,0 +1,66 @@
+<%
+if[_POST("newsId") == NULL]{
+    Database: "comments"
+    LineCount: commentsSize
+    %>
+        <form method="POST" target="oocms.cgi?page=index&subpage=postComments">
+            <h3>Post a comment</h3>
+            <p>Name:<input type="text" name="name" /></p>
+            <p>Email:<input type="text" name="email" /></p>
+            <textarea name="contents" rows="7" cols="75"></textarea><br/>
+            <input type="submit" value="Post! :)" />
+            <input type="hidden" name="newsId" value="<%Show: i;%>" />
+        </form>
+    <%
+}
+if[_POST("newsId") != NULL]{
+    Database: "news"
+    LineCount: newsCount
+    for[j:0..newsCount]{
+        if[j == _POST("newsId")]{
+            if[_POST("name") != NULL]{
+                if[_POST("email") != NULL]{
+                    Set:ok,"true"
+                    Date: date
+                    
+                    Database: "comments"
+                    LineCount: id
+                    ColumnNames: columnNames
+                    ColumnCount: columnCount
+                    
+                    for[k:0..columnCount]{
+                        if[columnNames(k) == "id"]{
+                            EditField: id,k,id
+                        }
+                        if[columnNames(k) == "newsId"]{
+                            EditField: id,k,j
+                        }
+                        if[columnNames(k) == "author"]{
+                            EditField: id,k,_POST("name")
+                        }
+                        if[columnNames(k) == "email"]{
+                            EditField: id,k,_POST("email")
+                        }
+                        if[columnNames(k) == "date"]{
+                            EditField: id,k,date
+                        }
+                        if[columnNames(k) == "contents"]{
+                            EditField: id,k,_POST("contents")
+                        }
+                    }
+                    
+                    %>
+                    <p>Your comment was successfully added.</p>
+                    <%
+                }
+            }
+            
+        }
+    }
+    if[ok!="true"]{
+    %>
+        <p>There was an error while writing your comment. Please try again.</p>
+    <%
+    }
+}
+%>

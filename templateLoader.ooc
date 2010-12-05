@@ -7,6 +7,7 @@ import io/File
 import structs/ArrayList
 import addressParser
 import tokenizer
+import os/Time
 
 // NO SEGFAULTS, BUT MANY THINGS TO FIX :/ 
 
@@ -46,6 +47,21 @@ TemplateLoader : class // class that takes care of loading the template's databa
     init : func()
     {
         // Create our thtmlFunctions :) (Note the kewl new way to do that :D)
+        thtmlFunctions add(Function new("Date",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size == 1)
+                            {
+                                // Version this up for windows (damned be they! :p)
+                                timeT := gc_malloc(TimeT size) as TimeT*
+                                time(timeT)
+                                tm := localtime(timeT)
+                                thtmlVars[args get(0)] = tm@ tm_mday toString() + "/" + tm@ tm_mon toString() + "/" + (1990 + tm@ tm_year) toString() + " " + tm@ tm_hour toString() + ":" + tm@ tm_min toString() + ":" + tm@ tm_sec toString()
+                            }
+                            else
+                            {
+                                return "ERROR: Function Date takes one argument."
+                            }
+                            ""
+                }))
         thtmlFunctions add(Function new("Add",func(args : ArrayList<String>, tl : TemplateLoader) {
                             if(args size == 3)
                             {
@@ -54,7 +70,14 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                 // arg 3 : right part
                                 rsv1 := tl resolveVariable(args get(1))
                                 rsv2 := tl resolveVariable(args get(2))
-                                thtmlVars[args get(0)] = rsv1 + rsv2
+                                if(((rsv1 toInt() == 0 && rsv1 == "0") || rsv1 toInt() != 0) && ((rsv2 toInt() == 0 && rsv2 == "0") || rsv2 toInt() != 0))
+                                {
+                                    thtmlVars[args get(0)] = "%d" format(rsv1 toInt() + rsv2 toInt())
+                                }
+                                else
+                                {
+                                    thtmlVars[args get(0)] = rsv1 + rsv2
+                                }
                             }
                             else
                             {
@@ -415,7 +438,7 @@ TemplateLoader : class // class that takes care of loading the template's databa
                                     tempArray := ArrayList<String> new()
                                     for(i in 0 .. tl db columns size)
                                     {
-                                        tempArray[i] = tl db columns get(i) name
+                                        tempArray add(tl db columns get(i) name)
                                     }
                                     tempContainer := StrListContainer new()
                                     tempContainer array = tempArray
@@ -647,7 +670,14 @@ TemplateLoader : class // class that takes care of loading the template's databa
                     ofile = "design/"+file+".thtml"
                 }
                 data := parseFile(ofile)
-                contents = contents replaceAll("__["+file+"]__",data)
+                if((file == "" || file == null) && !ap design?)
+                {
+                    contents = data
+                }
+                else if(ap design?)
+                {
+                    contents = contents replaceAll("__["+file+"]__",data)
+                }
             }
         }
         
@@ -825,7 +855,6 @@ TemplateLoader : class // class that takes care of loading the template's databa
                     thtmlVars[toReplace] = ("%d" format(index))// create the loop variable
                     moreData := Tokenizer execute(tokens,this) // execute code
                     
-                    thtmlVars remove(toReplace)// remove the loop variable :) 
                     if(moreData != null)
                     {
                         ret += moreData

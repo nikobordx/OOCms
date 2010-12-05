@@ -1,25 +1,57 @@
 <%
+SetMap: "comments","_GET",NULL
+%>
+<script type="text/javascript">
+var i = 0
+function nextNews()
+{
+    i++;
+    if (window.XMLHttpRequest)
+    {
+        xmlhttp=new XMLHttpRequest();
+    }
+    else
+    {
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    
+    xmlhttp.onreadystatechange=function()
+    {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            document.getElementById('newsBox').innerHTML=xmlhttp.responseText;
+        }
+    }
+    xmlhttp.open("GET","oocms.cgi?page=index&subpage=showNews&id="+i+"&mode=designless&comments=false",true);
+    xmlhttp.send();
+}
+function prevNews()
+{
+    i -= 2;
+    nextNews();
+}
+</script>
+
+<%
+SetMap: "id","_GET",0
+ReadFile: showNews,"templates/IndexTemplate/showNews.thtml"
+
 Database: "news"
 DescOrder: "id"
 Column: Title,"title"
 Column: Contents,"contents"
 LineCount: NewsCount
+%>
 
-for[i:0..5]{
-    if[Title(i) != NULL]{
-%>
-    <div class="cadre">
-        <div class="titre">
-            <%Show: Title(i);%>
-        </div>
-        <div class="marge_interne">
-            <br/>
-            <%Show: Contents(i);%>
-        </div>
-    </div>
-    <br/><br/>
+<div id="newsBox">
 <%
-    }
-}
+Set: i,0
+Execute: showNews
 %>
-<a href="oocms.cgi?page=index&subpage=allNews">Show all <%Show: NewsCount;%> news!</a>
+</div>
+
+<a href="javascript:nextNews()">Next</a><br/>
+<a href="javascript:prevNews()">Previous</a>
+<br/><br/>
+
+<a href="oocms.cgi?page=index&subpage=allNews">Show all <%Show:NewsCount;%> news.</a>
