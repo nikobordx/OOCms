@@ -1,16 +1,0 @@
-¤ͳHTML¤¤¤¤¤¤
-¤¤Databaseͳfunction¤¤:¤¤ ¤¤"news"ͳstring¤¤¤¤
-¤¤DescOrderͳfunction¤¤:¤¤ ¤¤"id"ͳstring¤¤¤¤
-¤¤Columnͳfunction¤¤:¤¤ ¤¤Titleͳargument¤¤,¤¤"title"ͳstring¤¤¤¤
-¤¤Columnͳfunction¤¤:¤¤ ¤¤Contentsͳargument¤¤,¤¤"contents"ͳstring¤¤¤¤
-¤¤LineCountͳfunction¤¤:¤¤ ¤¤NewsCountͳargument¤¤¤¤
-¤¤¤¤¤¤
-¤¤SetMapͳfunction¤¤:¤¤ ¤¤"comments"ͳstring¤¤,¤¤"_GET"ͳstring¤¤,¤¤NULLͳargument¤¤¤¤
-¤¤ReadFileͳfunction¤¤:¤¤ ¤¤showNewsͳargument¤¤,¤¤"templates/IndexTemplate/showNews.thtml"ͳstring¤¤¤¤
-¤¤¤¤¤¤
-¤¤for¤¤[i:0..NewsCount]ͳloop¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤SetMapͳfunction¤¤:¤¤ ¤¤"id"ͳstring¤¤,¤¤"_GET"ͳstring¤¤,¤¤iͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤Executeͳfunction¤¤:¤¤ ¤¤showNewsͳargument¤¤¤¤
-¤¤}¤¤¤¤¤¤
-¤¤
-ͳHTML¤

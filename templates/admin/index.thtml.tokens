@@ -1,128 +1,0 @@
-¤Some how a "]" token is added after condition tokens  (and a see a condition token after 'for' ... wtf? oO)
-
-ͳHTML¤¤ ¤¤if¤¤[ _GET("name") == _CONFIG("adminName") ]ͳcondition¤¤]¤¤ ¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _GET("password") == _CONFIG("adminPass") ]ͳcondition¤¤]¤¤ ¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _POST("action") == NULL ]ͳcondition¤¤]¤¤ ¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _GET("database") == NULL ]ͳcondition¤¤]¤¤ ¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-                <h1>Listing databases</h1><br/>
-                ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤DatabaseNamesͳfunction¤¤:¤¤ ¤¤dbsͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤DatabaseCountͳfunction¤¤:¤¤ ¤¤numͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤for¤¤[ i: 0 .. num ]ͳcondition¤¤]¤¤ ¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-                    <a href="oocms.cgi?page=admin&database=ͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤dbs(i)ͳargument¤¤;¤¤&name=ͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"name"ͳstring¤¤)ͳargument¤¤;¤¤&password=ͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"password"ͳstring¤¤)ͳargument¤¤;¤¤">ͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤dbs(i)ͳargument¤¤;¤¤</a><br/>
-                ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _GET("database") != NULL ]ͳcondition¤¤]¤¤ ¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-                <h1>Listing database ͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"database"ͳstring¤¤)ͳargument¤¤;¤¤</h1><br/>
-                ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤Databaseͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"database"ͳstring¤¤)¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤LineCountͳfunction¤¤:¤¤ ¤¤lineCountͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤PrintDatabaseͳfunction¤¤:¤¤ ¤¤lineCountͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-                <br/><br/>
-                <h3>Delete line</h3>
-                <em>Tip: numbering of lines starts at zero</em><br/><br/>
-                <form method="POST" action="oocms.cgi?page=admin&name=ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"name"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤&password=ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"password"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤&database=ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"database"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤">
-                    <input type="hidden" name="action" value="delete"/>
-                    Number of line:<input type="text" name="deleteIndex" /><br/>
-                    <input type="submit" value="Delete" />
-                </form>
-                <br/><br/>
-                <h3>Edit/Create line</h3>
-                <em>Tip: numbering of lines starts at zero</em><br/>
-                <em>Tip: to create a line just leave number of line field empty</em><br/>
-                <em>Tip: leave a field empty to specify you do not want to change its value</em><br/><br/>
-                <form method="POST" action="oocms.cgi?page=admin&name=ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"name"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤&password=ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"password"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤&database=ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"database"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤">
-                    <input type="hidden" name="action" value="edit"/>
-                    <p>Number of line:<input type="text" name="lineIndex" /><br/></p>
-                    ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ColumnCountͳfunction¤¤:¤¤ ¤¤fieldsͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-                    <input type="hidden" name="fields" value="ͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤fieldsͳargument¤¤;¤¤"/>
-                    ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤for¤¤[ i: 0 .. fields ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-                        <p>Column ͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤iͳargument¤¤;¤¤:<input type="text" name="dataͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤iͳargument¤¤;¤¤"/><br/></p>
-                    ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-                    <input type="submit" value="Edit" />
-                </form>
-            ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _POST("action") != NULL ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _GET("database") != NULL ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤Databaseͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"database"ͳstring¤¤)¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _POST("action") == "delete" ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤DeleteLineͳfunction¤¤:¤¤ ¤¤_POST(ͳargument¤¤"deleteIndex"ͳstring¤¤)¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-                    <p>Line ͳHTML¤¤Showͳfunction¤¤:¤¤ ¤¤_POST(ͳargument¤¤"deleteIndex"ͳstring¤¤)ͳargument¤¤;¤¤ deleted.</p>
-                    ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _POST("action") == "edit" ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _POST("fields") != NULL ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _POST("lineIndex") != NULL]ͳcondition¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤for¤¤[ i: 0 .. _POST("fields") ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤Addͳfunction¤¤:¤¤ ¤¤fieldDataͳargument¤¤,¤¤"data"ͳstring¤¤,¤¤iͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _POST(fieldData) != NULL ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤EditFieldͳfunction¤¤:¤¤ ¤¤_POST(ͳargument¤¤"lineIndex"ͳstring¤¤)ͳargument¤¤,¤¤iͳargument¤¤,¤¤_POST(fieldData)ͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-                            <p>Line edited with success. <a href="oocms.cgi?page=admin&name=ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"name"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤&password=ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"password"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤ ">Return to administration index.</a></p>
-                            ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _POST("lineIndex") == NULL]ͳcondition¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤Addͳfunction¤¤:¤¤ ¤¤fieldDataͳargument¤¤,¤¤"data"ͳstring¤¤,¤¤iͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤LineCountͳfunction¤¤:¤¤ ¤¤lineIndexͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤for¤¤[ i: 0 .. _POST("fields") ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤EditFieldͳfunction¤¤:¤¤ ¤¤lineIndexͳargument¤¤,¤¤iͳargument¤¤,¤¤_POST(fieldData)ͳargument¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-                            <p>Line created with success. <a href="oocms.cgi?page=admin&name=ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"name"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤&password=ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_GET(ͳargument¤¤"password"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤ ">Return to administration index.</a></p>
-                            ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤if¤¤[ _GET("password") != _CONFIG("adminPass") ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤ ¤¤
-        <p>You must login as an administrator to access the control panel</p><br/>
-        <form method="GET" action="oocms.cgi">
-            <input type="hidden" name="page" value="admin"/>
-            Name: <input type="text" name="name" /><br/>
-            Password: <input type="password" name="password" /><br/>
-            <input type="submit" value="login" />
-        </form>
-        ͳHTML¤¤¤¤¤¤
-¤¤ ¤¤ ¤¤ ¤¤}¤¤¤¤¤¤
-¤¤}¤¤¤¤¤¤
-¤¤if¤¤[ _GET("name") != _CONFIG("adminName") ]ͳcondition¤¤]¤¤{¤¤¤¤¤¤
-¤¤
-<p>You must login as an administrator to access the control panel</p><br/>
-<form method="GET" action="oocms.cgi">
-    Name: <input type="text" name="name" /><br/>
-    <input type="hidden" name="page" value="admin"/>
-    Password: <input type="password" name="password" /><br/>
-    <input type="submit" value="login" />
-</form>
-ͳHTML¤¤¤¤¤¤
-¤¤}¤¤¤¤¤¤
-¤¤
-<br/><br/><br/>
-<em>Control panel - oocms version ͳHTML¤¤ ¤¤Showͳfunction¤¤:¤¤ ¤¤_CONFIG(ͳargument¤¤"version"ͳstring¤¤)ͳargument¤¤;¤¤ ¤¤</em>
-ͳHTML¤
