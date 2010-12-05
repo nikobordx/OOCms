@@ -1,0 +1,4 @@
+"id","newsId","date","author","email","contents"
+"0","1","today","me","smth@smth.com","pewpew!"
+"1","0","5/11/2100 13:3:40","shamanas","alex_naskos@hotmail.com","haha"
+"2","1","5/11/2100 13:6:5","shamanas <script>alert();</script>","alex_naskos@hotmail.com","<a href="javascript:KILL!:P()">Click me plz :-)</a>"
