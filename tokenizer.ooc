@@ -80,15 +80,19 @@ Tokenizer : class
                         if(getLeftToken(tokens,i) != -1)
                         {
                             left := getLeftToken(tokens,i)
+                            mergeTokens(tokens,i,findRightToken(tokens,i,"]"))
                             if(tokens get(left) value == "if")
                             {
-                                mergeTokens(tokens,i,findRightToken(tokens,i,"]"))
                                 tokens get(i) type = "condition"
                             }
                             else if(tokens get(left) value == "for")
                             {
-                                mergeTokens(tokens,i,findRightToken(tokens,i,"]"))
+                                
                                 tokens get(i) type = "loop"
+                            }
+                            else if(tokens get(left) value == "def")
+                            {
+                                tokens get(i) type = "funcDecl"
                             }
                         }
                     }
@@ -335,6 +339,35 @@ Tokenizer : class
                 else
                 {
                     return "Error: expected a loop after for keyword. (Did you forget '[' or ']' ?) , ( Found " + tokens get(loop) value + " at the place of a loop )"
+                }
+            }
+            else if(tokens get(i) value == "def")
+            {
+                decl := getRightToken(tokens,i)
+                if(tokens get(decl) type == "funcDecl")
+                {
+                    openIndx := getRightToken(tokens,decl)
+                    if(tokens get(openIndx) value == "{")
+                    {
+                        closeIndx := findNested(tokens,openIndx,"{","}")
+                        if(closeIndx != -1)
+                        {
+                            tl makeFunction(tokens get(decl) value, tokens slice(openIndx+1 .. closeIndx-1))
+                            tokens = deleteTokens(tokens,i,closeIndx)
+                        }
+                        else
+                        {
+                            return "Error: block not closed. (Did you forget '}' ?)"
+                        }
+                    }
+                    else
+                    {
+                        return "Error: expected a block after for keyword. Found " + tokens get(openIndx) value + " in the place of '{'"
+                    }
+                }
+                else
+                {
+                    return "Error: expected a function declaration after for keyword. (Did you forget '[' or ']' ?) , ( Found " + tokens get(decl) value + " at the place of a function declaration )"
                 }
             }
         }

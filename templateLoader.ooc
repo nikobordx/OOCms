@@ -2,12 +2,12 @@ use oocsv
 use oocgi
 import oocsv
 import oocgi
-import structs/MultiMap
 import io/File
-import structs/ArrayList
+import structs/[ArrayList,MultiMap]
 import addressParser
 import tokenizer
 import os/Time
+import text/StringTokenizer
 
 // NO SEGFAULTS, BUT MANY THINGS TO FIX :/ 
 
@@ -17,7 +17,33 @@ Function : class
     callback : Func(ArrayList<String>,TemplateLoader) -> String
     
     init : func (=name,=callback)
+}
+
+UserFunction : class extends Function
+{
+    code := ArrayList<Token> new()
+    funcArgs := ArrayList<String> new()
+    init : func ~extended (=code,=funcArgs,.name)
     {
+        super(name,func(args : ArrayList<String>, tl : TemplateLoader)
+        {
+            if(args size == funcArgs size)
+            {
+                temp := tl thtmlVars
+                for(i in 0 .. funcArgs size)
+                {
+                    tl thtmlVars[funcArgs get(i)] = tl resolveVariable(args get(i))
+                }
+                ret := Tokenizer execute(code,tl)
+                tl thtmlVars = temp
+                return ret
+            }
+            else
+            {
+                return "Function " + name + " takes " + funcArgs size toString() + " arguments."
+            }
+            ""
+        })
     }
 }
 
@@ -363,6 +389,21 @@ TemplateLoader : class // class that takes care of loading the template's databa
                             ""
                 }))
         
+        thtmlFunctions add(Function new("ArrayCount",func(args : ArrayList<String>, tl : TemplateLoader) {
+                            if(args size == 2)
+                            {
+                                if(tl thtmlArrays != null && tl thtmlArrays get(args get(1)) != null)//if there is an array with that name
+                                {
+                                    tl thtmlVars[args get(0)] = tl thtmlArrays get(args get(1)) array size toString()
+                                }
+                            }
+                            else
+                            {
+                                return "ERROR: Function ArrayCount takes two arguments."
+                            }
+                            ""
+                }))
+        
         thtmlFunctions add(Function new("LineCount",func(args : ArrayList<String>, tl : TemplateLoader) {
                             if(args size == 1)
                             {
@@ -652,6 +693,7 @@ TemplateLoader : class // class that takes care of loading the template's databa
     
         getDesign()
     
+        parseFile("system.thtml")
         replaceOpens := base findAll("__[")
         replaceCloses := base findAll("]__")
         if(replaceOpens size == replaceCloses size)
@@ -788,6 +830,28 @@ TemplateLoader : class // class that takes care of loading the template's databa
         }
     
         return null // No variable found, send back null ;( 
+    }
+    
+    makeFunction : func (decl : String, tokens : ArrayList<Token>)
+    {
+        if(decl[0] == '[' && decl[decl size-1] == ']')
+        {
+            decl = decl substring(1,decl size-1)
+            parts := decl split(':')
+            if(parts size == 2)
+            {
+                name := parts get(0)
+                argsDecl := parts get(1) replaceAll(" ","")
+                moreParts := argsDecl split(',')
+                funcArgs := ArrayList<String> new()
+                for(part in moreParts)
+                {
+                    funcArgs add(part)
+                }
+                function := UserFunction new(tokens,funcArgs,name)
+                thtmlFunctions add(function)
+            }
+        }
     }
     
     parseCondition : func (cond : String) -> Bool

@@ -1,0 +1,6 @@
+<%
+def[ExecuteFile:file] {
+    ReadFile: data,file
+    Execute: data
+}
+%>
